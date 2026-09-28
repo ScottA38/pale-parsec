@@ -12,6 +12,8 @@
     "astro": "astro"
   },
   "dependencies": {
+    "@astrojs/node": "^11.1.6",
+    "@clerk/astro": "^4.1.6",
     "astro": "^7.3.5"
   },
   "allowScripts": {
