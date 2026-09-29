@@ -1,5 +1,7 @@
 ---
-
+import { Show, UserButton, SignInButton } from '@clerk/astro/react'
+import Header from '../components/Header.astro';
+import Welcome from '../components/Welcome';
 ---
 
 <html lang="en">
@@ -12,6 +14,23 @@
 		<title>Astro</title>
 	</head>
 	<body>
-		<h1>Astro</h1>
+    <!-- <header>
+      <nav>
+        <Show when="signed-out" client:load>
+          <SignInButton client:load mode="modal" />
+        </Show>
+        <Show when="signed-in" client:load>
+          <UserButton client:load />
+        </Show>
+      </nav>
+    </header> -->
+    <Header title="Freedom Driver"/>
+      <Welcome />
 	</body>
 </html>
+<style lang="scss">
+  body {
+    position: relative;
+    background-color: black;
+  }
+</style>

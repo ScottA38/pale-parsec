@@ -1,0 +1,81 @@
+---
+const { title } = Astro.props;
+---
+
+<header class="site header">
+  <h1 class="site title">{ title }</h1>
+  <nav class="site navigation">
+    <ol class="site navigation list">
+      <li class="crumb">
+        <span class="highlight">
+          <a class="nav link" href="/">Home</a>
+        </span>
+      </li>
+      <li class="crumb">
+        <span class="highlight">
+          <a class="nav link" href="band">The Band</a>
+        </span>
+      </li>
+      <li class="crumb">
+        <span class="highlight">
+          <a class="nav link" href="tour">Tour</a>
+        </span>
+      </li>
+      <li class="crumb">
+        <span class="highlight">
+          <a class="nav link" href="merch">Merch</a>
+        </span>
+      </li>
+    </ol>
+  </nav>
+</header>
+<style>
+  .site.header {
+    position: relative;
+    top: 0;
+    left: 0;
+    width: 100%;
+    padding-bottom: 2rem;
+    border-bottom: 1px ridge rgb(211 220 50 / 0.6) ;
+    vertical-align: middle;
+  }
+
+  .crumb {
+    background-color: #333;
+  }
+
+  .site.navigation {
+    /* background-color: aliceblue; */
+    /* position: relative; */
+    top: 0;
+    right: 0;
+    margin-right: 2rem;
+
+    ol {
+      display: inline-block;
+      list-style: decimal;
+
+      .crumb {
+        /* display: inline-block; */
+        color: white;
+      }
+    }
+  }
+
+  h1.site.title {
+    font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+    font-size: 3rem;
+    font-weight: bold;
+    color: white;
+    text-align: left;
+    padding-left: 1.5rem;
+    margin-top: 2rem;
+    margin-bottom: 2rem;
+  }
+
+  .highlight {
+    display: inline-block;
+    padding: .25rem 0;
+    color: rgb(211 220 50 / 0.6);
+  }
+</style>

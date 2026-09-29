@@ -1,0 +1,13 @@
+---
+import SiteLayout from "../layouts/SiteLayout.astro";
+import { clerkClient } from "@clerk/astro/server";
+const { isAuthenticated, userId, redirectToSignIn } = Astro.locals.auth();
+
+if (!isAuthenticated) {
+  return redirectToSignIn()
+}
+---
+
+<SiteLayout>
+  <h1>Welcome {}</h1>
+</SiteLayout>
