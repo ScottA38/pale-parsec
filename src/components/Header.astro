@@ -1,33 +1,51 @@
 ---
 const { title } = Astro.props;
+type NavConfigItem  = {
+  link: string;
+  label: string;
+}
+const navConfig: NavConfigItem[] = [
+  {
+    link: "/",
+    label: "Home",
+  },
+  {
+    link: "/band",
+    label: "The Band",
+  },
+  {
+    link: "/tour",
+    label: "Tour",
+  },
+  {
+    link: "/merch",
+    label: "Merch",
+  }
+]
+import { getImage } from "astro:assets";
+import tornBillboard from '../torn-billboard-herr-loeffler.jpg';
+let menuCounter = 0;
+
+const optimizedBackground = await getImage({ src: tornBillboard, format: "webp" });
 ---
 
 <header class="site header">
-  <h1 class="site title">{ title }</h1>
-  <nav class="site navigation">
-    <ol class="site navigation list">
-      <li class="crumb">
-        <span class="highlight">
-          <a class="nav link" href="/">Home</a>
-        </span>
-      </li>
-      <li class="crumb">
-        <span class="highlight">
-          <a class="nav link" href="band">The Band</a>
-        </span>
-      </li>
-      <li class="crumb">
-        <span class="highlight">
-          <a class="nav link" href="tour">Tour</a>
-        </span>
-      </li>
-      <li class="crumb">
-        <span class="highlight">
-          <a class="nav link" href="merch">Merch</a>
-        </span>
-      </li>
-    </ol>
-  </nav>
+    <nav class="site navigation">
+      <h1 class="site title">{ title }</h1>
+      <ol class="site navigation list">
+        {
+          navConfig.map((configItem: NavConfigItem, index: number) => {
+            const renderedLi = (<li class="crumb" style={`background-image: url(${optimizedBackground.src}); background-position: ${ (index * 10) }% 0%`}>
+              <span class="highlight">
+                <a class="nav link" href={ configItem.link }>{ configItem.label }</a>
+              </span>
+            </li>);
+
+           return renderedLi 
+          })
+        };
+      </ol>
+    </nav>
 </header>
 <style>
   .site.header {
@@ -40,24 +58,27 @@ const { title } = Astro.props;
     vertical-align: middle;
   }
 
-  .crumb {
-    background-color: #333;
-  }
-
   .site.navigation {
-    /* background-color: aliceblue; */
-    /* position: relative; */
-    top: 0;
-    right: 0;
     margin-right: 2rem;
 
     ol {
-      display: inline-block;
+      display: flex;
+      flex-direction: column;
+      gap: 2.5rem;
       list-style: decimal;
 
       .crumb {
+        padding: 2rem;
+        border-radius: 1rem;;
         /* display: inline-block; */
         color: white;
+        text-align: right;
+
+        a {
+          font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+          color: black;
+          text-decoration: none;
+        }
       }
     }
   }
