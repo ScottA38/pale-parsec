@@ -1,9 +1,16 @@
 {
   "version": "0.2.0",
+  "inputs": [],
   "configurations": [
     {
       "command": "./node_modules/.bin/astro dev",
       "name": "Development server",
+      "request": "launch",
+      "type": "node-terminal"
+    },
+    {
+      "command": "netlify dev",
+      "name": "netlify server",
       "request": "launch",
       "type": "node-terminal"
     }

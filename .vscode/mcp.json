@@ -1,0 +1,20 @@
+{
+	"servers": {
+		"my-mcp-server-cdb737d4": {
+			"url": "https://mcp.clerk.com/mcp",
+			"type": "http"
+		},
+		"netlify": {
+			"type": "stdio",
+			"command": "/nix/store/7pn7zw2sciv3fih9l4xpyvx0q8hlrr0w-nodejs-24.20.0/bin/npx",
+			"args": [
+				"-y",
+				"@netlify/mcp"
+			],
+			"env": {
+				"PATH": "/nix/store/7pn7zw2sciv3fih9l4xpyvx0q8hlrr0w-nodejs-24.20.0/bin:/run/current-system/sw/bin:/opt/homebrew/bin:/usr/bin:/bin:/usr/sbin:/sbin"
+			}
+		}
+	},
+	"inputs": []
+}

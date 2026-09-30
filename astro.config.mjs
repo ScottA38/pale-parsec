@@ -1,12 +1,14 @@
 // @ts-check
 import { defineConfig } from 'astro/config';
-import node from "@astrojs/node";
 import clerk from "@clerk/astro";
 import react from "@astrojs/react";
+import netlify from "@astrojs/netlify";
 
 // https://astro.build/config
 export default defineConfig({
   integrations: [clerk(), react()],
-  adapter: node({ mode: "standalone" }),
+  adapter: netlify({
+    middlewareMode: 'edge'
+  }),
   output: "server"
 });
