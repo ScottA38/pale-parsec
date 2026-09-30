@@ -1,10 +1,10 @@
-import type { APIRoute } from "astro";
+import type { APIRoute, AstroSession,  } from "astro";
 import RSSParser from 'rss-parser';
 
 export const prerender = false;
 const parser = new RSSParser();
 
-export const GET = (async ({ params, request: Request}) => {
+export const GET = (async ({ params, request: Request, session: AstroSession }) => {
   // const sessionValue = Astro.session?.get('band-data');
   const feedUrl = import.meta.env.BAND_SEARCH_URL;
 
@@ -29,6 +29,6 @@ export const GET = (async ({ params, request: Request}) => {
   } catch (error) {
     console.error("Failed to load band feed", error);
 
-    return new Response(JSON.stringify({ error: "Failed to load band feed" }), { status: 502 });
+    return new Response(JSON.stringify({ error: "Failed to load band feed" }), { status: 500 });
   }
 }) satisfies APIRoute;

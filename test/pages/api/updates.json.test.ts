@@ -1,4 +1,14 @@
 import { expect, describe, test, vi, beforeEach, afterEach } from 'vitest';
+vi.mock(import('rss-parser'), () => {
+  return {
+    default: class {
+      parseString() {
+        throw new Error('fake parser error');
+      }
+    }
+  };
+});
+
 
 describe('Extract band data from rss feed', () => {
   const apiRouteEndpointAddress: string  = "https://openrss.org/feed/somebandname.bandcamp.com/music";
@@ -89,6 +99,47 @@ describe('Extract band data from rss feed', () => {
     expect(apiResponse.status).toBe(502);
     expect(responseJson).toEqual(expect.objectContaining(
       { "error": expect.any(String) }
+    ));
+  });
+
+  /** 
+   * Required practise for OpenRSS developers polling programmatically on OpenRSS endpoints
+   * 
+   * @see https://openrss.org/guides/developers-guide-to-open-rss-feeds
+   * */
+  test.skip('It should respect the max-age headers of a response', async () => {
+    const fetchSpy = vi.spyOn(globalThis, 'fetch').mockResolvedValue({
+      ok: true,
+      text: async () => JSON.stringify({ items: []}),
+      headers: new Headers({ 'cache-control': 'max-age=300' })
+    } as any);
+    const mockSessionStorage = {
+      get: vi.fn().mockReturnValue(''),
+      set: vi.fn()
+    };
+
+    const { GET } = await import('../../../src/pages/api/updates.json');
+    const apiResponse = await GET({
+      request: exampleRequest
+    } as any);
+
+    expect(apiResponse.headers.get('cache-control')).toBe('max-age=300');
+  });
+
+  test('It should catch a parser error and return a 500 response', async () => {
+    vi.spyOn(globalThis, 'fetch').mockResolvedValue({
+      ok: true,
+    } as any);
+    const { GET } = await import('../../../src/pages/api/updates.json');
+    const apiResponse = await GET({
+      request: exampleRequest
+    } as any);
+
+    expect(apiResponse.status).toBe(500);
+    expect(await apiResponse.json()).toEqual(
+      expect.objectContaining({
+        error: expect.any(String)
+      }
     ));
   });
 });
