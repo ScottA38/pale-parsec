@@ -1,9 +1,9 @@
 import { useStore } from '@nanostores/react';
-import { $userStore, $isLoadedStore } from "@clerk/astro/client";
+import { $userStore } from "@clerk/astro/client";
+import '../styles/text.scss';
 
-export default function UserWelcome() {
+export default function UserWelcome({containerStyle: string = ""}) {
   const user = useStore($userStore);
-  // const isLoaded = useStore($isLoadedStore);
   console.log(JSON.stringify(user));
   
   if (user === undefined) {
@@ -14,7 +14,7 @@ export default function UserWelcome() {
     return <span className="user-data">Please sign in to continue.</span>;
   }
   
-  return <div class="welcome">
-    <h1>Welcome, { user.username }</h1>
+  return <div class="welcome" style={containerStyle}>
+    <span>Welcome, { user.username }</span>
   </div>
 }
