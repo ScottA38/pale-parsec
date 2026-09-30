@@ -1,29 +1,20 @@
 ---
-import Header from '../components/Header.astro';
-import Welcome from '../components/Welcome';
+import MainLayout from "../layouts/MainLayout.astro";
 ---
 
-<html lang="en">
-	<head>
-		<meta charset="utf-8" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<link rel="icon" href="/favicon.ico" />
-		<meta name="viewport" content="width=device-width" />
-		<meta name="generator" content={Astro.generator} />
-		<title>Astro</title>
-	</head>
-	<body>
-      <Header title="Freedom Driver"/>
-      <Welcome />
-	</body>
-</html>
+<MainLayout>
+  <h2>Welcome</h2>
+
+  <p>We are Freedom Driver, a new-wave alt-rock band from Shropshire, West Midlands</p>
+  <p>We bring high-energy performances with a bang!</p>
+  <p>We are a tight-knit outfit of passionate musicians who have devoted their skills to a variety act with the ability to shake the room.</p>
+</MainLayout>
+
 <style lang="scss">
-  body {
-    position: relative;
-    background-color: black;
-  }
+  @use '../styles/text.scss' as t;
 
   h2 {
+    @include t.title-text;
     color: white;
   }
 </style>
