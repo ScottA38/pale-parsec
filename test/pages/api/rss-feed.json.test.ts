@@ -27,7 +27,7 @@ describe('Extract band data from rss feed', () => {
   test('It should fail without a configured API key to poll', async () => {
     vi.stubEnv('BAND_SEARCH_URL', '');
 
-    const { GET } = await import('../../../src/pages/api/updates.json');
+    const { GET } = await import('../../../src/pages/api/rss-feed.json');
     // const expectedErrorMessage: string = 'BAND_SEARCH_URL is not configured';
     const apiResponse = await GET({
       request: exampleRequest
@@ -69,7 +69,7 @@ describe('Extract band data from rss feed', () => {
         text: async () => JSON.stringify(sampleRSSJson),
       } as any);
 
-    const { GET } = await import('../../../src/pages/api/updates.json');
+    const { GET } = await import('../../../src/pages/api/rss-feed.json');
     await GET({
       request: exampleRequest
     } as any);
@@ -90,7 +90,7 @@ describe('Extract band data from rss feed', () => {
       status: 500,
     } as any);
 
-    const { GET } = await import('../../../src/pages/api/updates.json');
+    const { GET } = await import('../../../src/pages/api/rss-feed.json');
     const apiResponse = await GET({
       request: exampleRequest
     } as any);
@@ -118,7 +118,7 @@ describe('Extract band data from rss feed', () => {
       set: vi.fn()
     };
 
-    const { GET } = await import('../../../src/pages/api/updates.json');
+    const { GET } = await import('../../../src/pages/api/rss-feed.json');
     const apiResponse = await GET({
       request: exampleRequest
     } as any);
@@ -130,7 +130,7 @@ describe('Extract band data from rss feed', () => {
     vi.spyOn(globalThis, 'fetch').mockResolvedValue({
       ok: true,
     } as any);
-    const { GET } = await import('../../../src/pages/api/updates.json');
+    const { GET } = await import('../../../src/pages/api/rss-feed.json');
     const apiResponse = await GET({
       request: exampleRequest
     } as any);
