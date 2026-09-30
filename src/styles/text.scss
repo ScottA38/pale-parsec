@@ -1,0 +1,20 @@
+@mixin title-text {
+  color: white;
+  font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif; 
+  font-weight: bold;
+  letter-spacing: 3px;
+}
+
+@mixin subheading-text {
+  color: white;
+  font-weight: 200;
+  font-style: italic;
+}
+
+span, p, h1, h2 {
+  color: white;
+}
+
+h1 {
+  @include title-text;
+}

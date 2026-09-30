@@ -37,11 +37,15 @@ const optimizedBackground = await getImage({ src: tornBillboard, format: "webp" 
       <ol class="site navigation list">
         {
           navConfig.map((configItem: NavConfigItem, index: number) => {
-            const renderedLi = (<li class="crumb" style={`background-image: url(${optimizedBackground.src}); background-position: ${ (index * 10) }% 0%`}>
+          const renderedLi = (
+            <a class="nav link" href={ configItem.link }>
+              <li class="crumb" style={`background-image: url(${optimizedBackground.src}); background-position: ${ (index * 15) }% 0%`}>
               <span class="highlight">
-                <a class="nav link" href={ configItem.link }>{ configItem.label }</a>
+                  { configItem.label }
               </span>
-            </li>);
+              </li>
+            </a>
+          );
 
            return renderedLi 
           })
@@ -49,72 +53,89 @@ const optimizedBackground = await getImage({ src: tornBillboard, format: "webp" 
       </ol>
     </nav>
 </header>
-<style>
-  span.headings-container {
-    display: block;
-    padding-left: 2rem;
-  }
-
-  .site.subheading {
-    color: white;
-    font-weight: 200;
-    font-style: italic;
-  }
+<style lang="scss">
+  @use "../styles/text.scss" as t;
 
   .site.header {
-    position: relative;
+    position: fixed;
     top: 0;
     left: 0;
-    width: 100%;
+    // width: 100%;
     padding-bottom: 2rem;
     border-bottom: 1px ridge rgb(211 220 50 / 0.6) ;
     vertical-align: middle;
 
-    sub {
-      padding-right: .5rem;
-    }
+    // &:hover ol {
+    //   grid-template-columns: repeat(4, minmax(0, 1fr));
+    // }
   }
 
+  /** Navigation */
   .site.navigation {
-    margin-right: 2rem;
-
     ol {
-      display: flex;
-      flex-direction: column;
+      display: grid;
+      grid-template-rows: repeat(4, minmax(0, 1fr));
       gap: 2.5rem;
       list-style: decimal;
 
-      .crumb {
+      li.crumb {
         padding: 2rem;
-        border-radius: 1rem;;
-        /* display: inline-block; */
+        max-width: 20vw;
         color: white;
+        border: .25rem solid white;
+        // border-top: 1px;
+        // border-right: 5px;
+        // border-width: .25rem;
+        // border-color: hotpink;
+        border-radius: 5px;
+        /* box-shadow: 3px 6px 10px black; */
         text-align: right;
+        list-style: none;
+        text-shadow:
+          3px 3px 1px black;
+        transition: 0.2s ease all;
+        transition-delay: 100ms;
+
+        &:hover {
+          transform: translateX(15px);
+        }
 
         a {
+          display: inline-block;
           font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
           color: black;
           text-decoration: none;
         }
       }
     }
+
+    .highlight {
+      display: inline-block;
+      padding: .25rem 0;
+    color: white;
+    }
   }
 
-  h1.site.title {
-    font-size: 3rem;
-    font-family:Cambria, Cochin, Georgia, Times, 'Times New Roman', serif; 
-    font-weight: bold;
-    letter-spacing: 3px;
-    color: white;
-    text-align: left;
+  /** headings */
+  .site.title {
+    @include t.title-text;
     padding-left: 1.5rem;
     margin-top: 2rem;
     margin-bottom: 2rem;
+    text-shadow: -3px 3px 0 hotpink;
+
+    sub {
+      padding-right: .5rem;
+    }
   }
 
-  .highlight {
-    display: inline-block;
-    padding: .25rem 0;
-    color: white;
+  span.headings-container {
+    display: block;
+    padding-left: 2rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .site.subheading {
+    @include t.subheading-text 
   }
 </style>
