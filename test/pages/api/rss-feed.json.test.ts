@@ -1,14 +1,14 @@
 import { expect, describe, test, vi, beforeEach, afterEach } from 'vitest';
+const mockParseString = vi.fn();
 vi.mock(import('rss-parser'), () => {
   return {
     default: class {
       parseString() {
-        throw new Error('fake parser error');
+        return mockParseString(); 
       }
     }
   };
 });
-
 
 describe('Extract band data from rss feed', () => {
   const apiRouteEndpointAddress: string  = "https://openrss.org/feed/somebandname.bandcamp.com/music";
@@ -21,6 +21,7 @@ describe('Extract band data from rss feed', () => {
 
   afterEach(() => {
     vi.unstubAllEnvs();
+    
     vi.resetAllMocks();
   })
 
@@ -37,7 +38,7 @@ describe('Extract band data from rss feed', () => {
     expect(apiResponse.status).toBe(500);
   });
 
-  test('It should form a request to the configured URL', async () => {
+  test('it should poll the configured rss endpoint', async () => {
     const sampleRSSJson = {
       items: [
         {
@@ -68,8 +69,8 @@ describe('Extract band data from rss feed', () => {
         ok: true,
         text: async () => JSON.stringify(sampleRSSJson),
       } as any);
-
     const { GET } = await import('../../../src/pages/api/rss-feed.json');
+
     await GET({
       request: exampleRequest
     } as any);
@@ -81,6 +82,10 @@ describe('Extract band data from rss feed', () => {
           headers: { Accept: "application/rss+xml, application/xml, text/xml" }
         }
       );
+  });
+
+  test('it should parse the returned endpoint xml', async () => {
+    
   });
 
   test('It should return a 502 response if the target XML endpoint returns an error code', async () => {
@@ -127,8 +132,10 @@ describe('Extract band data from rss feed', () => {
   });
 
   test('It should catch a parser error and return a 500 response', async () => {
+    mockParseString.mockThrow('fake parser error')
     vi.spyOn(globalThis, 'fetch').mockResolvedValue({
       ok: true,
+      text: async () => '<!-- DOCTYPE html><html><body></body></html>'
     } as any);
     const { GET } = await import('../../../src/pages/api/rss-feed.json');
     const apiResponse = await GET({
