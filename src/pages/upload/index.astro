@@ -1,40 +1,8 @@
 ---
+import AdminLayout from "../../layouts/AdminLayout.astro";
+import UploadForm from "../../components/upload-photo";
 ---
 
-<div class="upload container">
-  <span class="validation log" id="log"></span>
-  <form action="/api/updates.json" method="post" id="upload-form">
-    <input type="text" name="title" id="title" required />
-    <input type="text" name="subheading" name="subheading" id="subheading" />
-    <input type="text" name="content" title="blog-content" id="blog-content" required />
-    <input type="url" name="link" title="related-link" id="related-link" />
-    <input type="image" name="images" title="related-images" id="related-images" multiple />
-    <input type="text" name="tags" title="article-tags" id="tags" />
-    <input type="submit" name="submit" id="submit" />
-  </form> 
-</div>
-
-<script>
-  const uploadElement: HTMLElement | null = document.getElementById('upload-form');
-  const log = document.getElementById('log');
-
-  function validateFormInputs(event: SubmitEvent) {
-    if (uploadElement === null) {
-      console.error("Could not identify form element");
-
-      return 1;
-    }
-
-    if (uploadElement?.childNodes === undefined) {
-      console.error('HTML Form element not captured correctly');
-    }
-    
-    for (let i = 0; i < uploadElement.children.length; i++) {
-      console.log(uploadElement.children[0]);
-    }
-
-    event.preventDefault();
-  }
-
-  uploadElement?.addEventListener('submit', validateFormInputs);
-</script>
+<AdminLayout>
+  <UploadForm client:load />
+</AdminLayout>
