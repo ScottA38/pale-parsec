@@ -1,0 +1,33 @@
+---
+---
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="generator" content={Astro.generator} />
+  </head>
+  <body>
+    <header class="admin header">
+      <h1>Admin</h1>
+    </header>
+    <article class="admin dsahboard">
+      <slot />
+    </article>
+  </body>
+</html>
+
+<style lang="scss">
+  header {
+    width: 100%;
+    height: 10vh;
+    background-color: aqua;
+  }
+
+  body {
+    width: 100%;
+    height: 100%;
+    background-color: lightgray;
+  }
+</style>
