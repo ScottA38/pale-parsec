@@ -1,18 +1,21 @@
 import { vi, expect, test, describe } from 'vitest';
 
-const { setStoreKey, getStoreKey } = vi.hoisted(() => ({
+const { setStoreKey, getStoreKey, listStore } = vi.hoisted(() => ({
   setStoreKey: vi.fn(),
-  getStoreKey: vi.fn()
+  getStoreKey: vi.fn(),
+  listStore: vi.fn()
 }));
 vi.mock("@netlify/blobs", () => ({
   getStore: vi.fn().mockImplementation(() => ({
     get: getStoreKey,
-    set: setStoreKey
+    set: setStoreKey,
+    list: listStore
   }))
 }));
 
 const apiEndpointUrl = 'http://localhost:4321/api/updates.json';
 describe('band updates portal api', () => {
+  /** POST Requests */
   test('it should reject a malformed request without uuid', async () => {
     const { POST } = await import('../../../src/pages/api/updates.json');
     const request = new Request(apiEndpointUrl, {
@@ -63,5 +66,43 @@ describe('band updates portal api', () => {
       'a-uuid-string',
       expect.any(Blob)
     );
+  });
+
+  /** GET Requests */
+  test('it should allow the user to retrieve all band updates', async () => {
+    const mockBlobData = [
+      {
+        uuid: 'uuid-1',
+        title: 'blob-1',
+        subheading: "wysiwg",
+        body: 'this is blob-1\'s content',
+        link: "https://wysiwyg.com",
+        images: ['image-1.jpg'],
+        tags: ['tag-1', 'tag-2'],
+      },
+      {
+        uuid: 'uuid-2',
+        title: '2 blob 4u1 holmes',
+        subheading: "gangsta",
+        body: 'this is blob-2\'s content',
+        link: "https://wysiwyg.two.com",
+        images: ['extra-mints.refurb.jpg'],
+        tags: ['tag-1', 'tag-2'],
+      },
+    ];
+    listStore.mockResolvedValue({
+      blobs: [{ key: 'uuid-1' }, { key: 'uuid-2' }]
+    });
+    getStoreKey.mockImplementation(async (key: string) =>
+      mockBlobData.find((blob) => blob.uuid === key)
+    );
+    const { GET } = await import('../../../src/pages/api/updates.json');
+    const apiResponse: Response = await GET();
+
+    expect(apiResponse.status).toBe(200);
+    expect(await apiResponse.json()).toEqual(mockBlobData);
+    expect(listStore).toHaveBeenCalledOnce();
+    expect(getStoreKey).toHaveBeenCalledWith('uuid-1');
+    expect(getStoreKey).toHaveBeenCalledWith('uuid-2');
   });
 });
