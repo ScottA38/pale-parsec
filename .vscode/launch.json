@@ -13,6 +13,21 @@
       "name": "netlify server",
       "request": "launch",
       "type": "node-terminal"
+    },
+    {
+      "command": "npx vitest",
+      "name": "test suite",
+      "request": "launch",
+      "type": "node-terminal"
+    },
+    {
+      "name": "Attach to Node Process",
+      "port": 9229,
+      "request": "attach",
+      "skipFiles": [
+        "<node_internals>/**"
+      ],
+      "type": "node"
     }
   ]
 }

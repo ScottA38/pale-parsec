@@ -21,7 +21,6 @@ describe('band updates portal api', () => {
         blog: {
           content: {
             title: 'New Tour Dates released again',
-            date: (new Date()).toDateString(),
             subheading: 'On the Road again: Southport',
             body: 'Tour dates announced for next month',
             link: 'https://www.songkick.com/tour-dates',
@@ -38,7 +37,6 @@ describe('band updates portal api', () => {
   });
 
   test('it should allow the user to add a band update', async () => {
-    const dateStamp = (new Date()).toDateString();
     const { POST } = await import('../../../src/pages/api/updates.json');
     const request = new Request(apiEndpointUrl, {
       method: 'POST',
@@ -47,7 +45,6 @@ describe('band updates portal api', () => {
           content: {
             uuid: 'a-uuid-string',
             title: 'New Tour Dates released again',
-            date: dateStamp,
             subheading: 'On the Road again: Southport',
             body: 'Tour dates announced for next month',
             link: 'https://www.songkick.com/tour-dates',

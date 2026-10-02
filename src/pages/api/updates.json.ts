@@ -1,6 +1,5 @@
 import { type Store, getStore } from '@netlify/blobs';
 import * as zod from 'zod';
-import path from 'node:path';
 
 export type blogEntry = {
   content: {
@@ -19,10 +18,9 @@ const updateSchema = zod.object({
     content: zod.object({
       uuid: zod.string(),
       title: zod.string(),
-      date: zod.string(),
-      subheading: zod.string(),
+      subheading: zod.string().optional(),
       body: zod.string(),
-      link: zod.url(),
+      link: zod.url().optional(),
       images: zod.array(
         zod.string().refine((val) => val.match(/\.jpg$|\.png$|\.avif$|\.webp$/))
       ),
