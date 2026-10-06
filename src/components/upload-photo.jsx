@@ -1,11 +1,5 @@
 import { v7 as uuidGen } from 'uuid';
 
-/** <div class="upload container">
-  <form action="/api/updates.json">
-    <input type="text" name="title" id="title" required />
-  </form>
-</div> */
-
 export default function UploadForm() {
   async function handleSubmit(e) {
     e.preventDefault();
@@ -19,6 +13,7 @@ export default function UploadForm() {
         }
       }
     };
+
     if (log === null) {
       console.error('Could not find element with id \'log\'');
 
@@ -31,9 +26,7 @@ export default function UploadForm() {
       return;
     }
 
-    console.log('form is valid');
     for (const [ key, value ] of formData.entries()) {
-      console.log(key, value);
       if (key === 'tags') {
         dataSkeleton.blog.content[key] = value.split(",").map(v => v.trim());
         continue;
@@ -52,7 +45,7 @@ export default function UploadForm() {
       const responseJson = await apiResponse.json();
 
       if (responseJson.status === 400) {
-        alert(responseJson)
+        return new Response(`Failed to upload form: ${responseJson.message}`);
       }
     }
   }
