@@ -1,6 +1,4 @@
 ---
-import Header from "../components/Header.astro";
-import SignIn from "../components/SignIn";
 ---
 
 <html lang="en">
@@ -11,17 +9,6 @@ import SignIn from "../components/SignIn";
     <meta name="generator" content={Astro.generator} />
   </head>
   <body>
-    <!-- <Header /> -->
-    <!-- <header>
-      <nav> -->
-        <!-- <Show when="signed-out" client:load>
-          <SignInButton client:load mode="modal" />
-        </Show>
-        <Show when="signed-in" client:load>
-          <UserButton client:load />
-        </Show> -->
-      <!-- </nav>
-    </header> -->
     <article>
       <slot />
     </article>
