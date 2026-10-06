@@ -1,4 +1,4 @@
-import { type Store, getStore } from '@netlify/blobs';
+import { type Store, getStore, listStores } from '@netlify/blobs';
 import * as zod from 'zod';
 
 export type blogEntry = {
@@ -44,11 +44,10 @@ export const POST = async ({ request }: { request: Request }) => {
 
   const validatedBlog = validationResponse.data.blog;
   const uuidKey = validatedBlog.content.uuid;
-  const blobEntry = new Blob(
-    [JSON.stringify(validatedBlog)],
-    { type: "application/json" }
+  await blogStore.set(
+    uuidKey,
+    new Blob([JSON.stringify(validatedBlog)], { type: "application/json" })
   );
-  await blogStore.set(uuidKey, blobEntry);
 
   return new Response(
     JSON.stringify({ message: `Band update successfully uploaded as ${uuidKey}` })

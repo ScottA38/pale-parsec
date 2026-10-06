@@ -13,6 +13,34 @@
       "name": "netlify server",
       "request": "launch",
       "type": "node-terminal"
+    },
+    {
+      "command": "npx vitest",
+      "name": "test suite",
+      "request": "launch",
+      "type": "node-terminal"
+    },
+    {
+      "name": "Attach to Node Process",
+      "port": 9229,
+      "request": "attach",
+      "skipFiles": [
+        "<node_internals>/**"
+      ],
+      "type": "node"
+    },
+    {
+      "type": "chrome",
+      "request": "launch",
+      "name": "Launch Chrome against Localhost",
+      "url": "http://localhost:4321",
+      "webRoot": "${workspaceFolder}/src",
+      "sourceMapPathOverrides": {
+        "vite:///src/*": "${webRoot}/*"
+      },
+      "skipFiles": [
+        "**/node_modules/**"
+      ]
     }
   ]
 }

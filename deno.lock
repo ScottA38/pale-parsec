@@ -21,6 +21,7 @@
         "npm:astro@^7.3.5",
         "npm:react-dom@^19.3.0",
         "npm:react@^19.3.0",
+        "npm:rss-parser@^3.13.0",
         "npm:sass@^1.105.0"
       ]
     }

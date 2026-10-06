@@ -1,0 +1,108 @@
+import { vi, expect, test, describe } from 'vitest';
+
+const { setStoreKey, getStoreKey, listStore } = vi.hoisted(() => ({
+  setStoreKey: vi.fn(),
+  getStoreKey: vi.fn(),
+  listStore: vi.fn()
+}));
+vi.mock("@netlify/blobs", () => ({
+  getStore: vi.fn().mockImplementation(() => ({
+    get: getStoreKey,
+    set: setStoreKey,
+    list: listStore
+  }))
+}));
+
+const apiEndpointUrl = 'http://localhost:4321/api/updates.json';
+describe('band updates portal api', () => {
+  /** POST Requests */
+  test('it should reject a malformed request without uuid', async () => {
+    const { POST } = await import('../../../src/pages/api/updates.json');
+    const request = new Request(apiEndpointUrl, {
+      method: 'POST',
+      body: JSON.stringify({
+        blog: {
+          content: {
+            title: 'New Tour Dates released again',
+            subheading: 'On the Road again: Southport',
+            body: 'Tour dates announced for next month',
+            link: 'https://www.songkick.com/tour-dates',
+            images: [ 'image-1.png', 'image-2.png', 'image-3.png' ],
+            tags: ['update', 'tour', 'shows', 'performance', 'schedule']
+          }
+        }
+      }),
+    });
+    const apiResponse: Response = await POST({ request });
+
+    expect(apiResponse.status).toBe(400)
+    expect(setStoreKey).not.toHaveBeenCalled()
+  });
+
+  test('it should allow the user to add a band update', async () => {
+    const { POST } = await import('../../../src/pages/api/updates.json');
+    const request = new Request(apiEndpointUrl, {
+      method: 'POST',
+      body: JSON.stringify({
+        blog: {
+          content: {
+            uuid: 'a-uuid-string',
+            title: 'New Tour Dates released again',
+            subheading: 'On the Road again: Southport',
+            body: 'Tour dates announced for next month',
+            link: 'https://www.songkick.com/tour-dates',
+            images: [ 'image-1.png', 'image-2.png', 'image-3.png' ],
+            tags: ['update', 'tour', 'shows', 'performance', 'schedule']
+          },
+        }
+      }),
+    });
+
+    const apiResponse: Response = await POST({ request });
+
+    expect(apiResponse.status).toBe(200)
+    expect(setStoreKey).toHaveBeenCalledOnce()
+    expect(setStoreKey).toHaveBeenCalledWith(
+      'a-uuid-string',
+      expect.any(Blob)
+    );
+  });
+
+  /** GET Requests */
+  test('it should allow the user to retrieve all band updates', async () => {
+    const mockBlobData = [
+      {
+        uuid: 'uuid-1',
+        title: 'blob-1',
+        subheading: "wysiwg",
+        body: 'this is blob-1\'s content',
+        link: "https://wysiwyg.com",
+        images: ['image-1.jpg'],
+        tags: ['tag-1', 'tag-2'],
+      },
+      {
+        uuid: 'uuid-2',
+        title: '2 blob 4u1 holmes',
+        subheading: "gangsta",
+        body: 'this is blob-2\'s content',
+        link: "https://wysiwyg.two.com",
+        images: ['extra-mints.refurb.jpg'],
+        tags: ['tag-1', 'tag-2'],
+      },
+    ];
+    listStore.mockResolvedValue({
+      blobs: [{ key: 'uuid-1' }, { key: 'uuid-2' }]
+    });
+    getStoreKey.mockImplementation(async (key: string) =>
+      mockBlobData.find((blob) => blob.uuid === key)
+    );
+    const { GET } = await import('../../../src/pages/api/updates.json');
+    const apiResponse: Response = await GET();
+
+    expect(apiResponse.status).toBe(200);
+    expect(await apiResponse.json()).toEqual(mockBlobData);
+    expect(listStore).toHaveBeenCalledOnce();
+    expect(getStoreKey).toHaveBeenCalledWith('uuid-1');
+    expect(getStoreKey).toHaveBeenCalledWith('uuid-2');
+  });
+});
