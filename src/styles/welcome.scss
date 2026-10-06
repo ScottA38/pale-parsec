@@ -1,0 +1,47 @@
+$welcome-border-radius: 0.5rem;
+
+.welcome {
+  &.container {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0.5rem;
+    padding: 0.5rem;
+    box-sizing: border-box;
+    align-items: center;
+    justify-items: center;
+    width: 100%;
+    
+    border-radius: $welcome-border-radius;
+    background-color: blanchedalmond;
+  }
+
+  &.avatar {
+    // border: .5rem ridge grey;
+    box-sizing: border-box;
+    // border-spacing: 1rem;
+    border-radius: $welcome-border-radius;
+  }
+
+  &.stats {
+    span {
+      display: block;
+    }
+  }
+}
+
+@media (min-width: 860px) {
+  .welcome {
+    &.container {
+        position: absolute;
+        grid-template-columns: auto;
+        width: auto;
+        right: 0;
+        // margin: 1rem;
+        padding: 1.5rem;
+    }
+
+    &.avatar {
+      margin: 1.5rem;
+    }
+  }
+}

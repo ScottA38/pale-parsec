@@ -11,7 +11,7 @@ import SignIn from "../components/SignIn";
     <meta name="generator" content={Astro.generator} />
   </head>
   <body>
-    <Header title="Freedom Driver" client:load />
+    <!-- <Header /> -->
     <!-- <header>
       <nav> -->
         <!-- <Show when="signed-out" client:load>
@@ -29,7 +29,10 @@ import SignIn from "../components/SignIn";
 </html>
 <style lang="scss">
   body {
+    margin: 0;
+    padding: 0;
     width: 100%;
+    max-width: 100vw;
     height: 100%;
     max-width: 100%;
     background:
@@ -37,5 +40,9 @@ import SignIn from "../components/SignIn";
       radial-gradient(at 100% 100%,      rgba(96, 16, 48, 0) 9px, #613 10px, rgba(96, 16, 48, 0) 11px),
       #8a3;
       background-size: 20px 20px;
+  }
+
+  article {
+    margin: 0.5rem;
   }
 </style>
