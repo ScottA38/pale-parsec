@@ -1,14 +1,17 @@
 import { vi, expect, test, describe } from 'vitest';
 
-const { setStoreKey, getStoreKey, listStore } = vi.hoisted(() => ({
+const { setStoreKey, getStoreKey, deleteStoreKey, listStore } = vi.hoisted(() => ({
   setStoreKey: vi.fn(),
   getStoreKey: vi.fn(),
+  deleteStoreKey: vi.fn(),
   listStore: vi.fn()
 }));
+
 vi.mock("@netlify/blobs", () => ({
   getStore: vi.fn().mockImplementation(() => ({
     get: getStoreKey,
     set: setStoreKey,
+    delete: deleteStoreKey,
     list: listStore
   }))
 }));
@@ -104,5 +107,38 @@ describe('band updates portal api', () => {
     expect(listStore).toHaveBeenCalledOnce();
     expect(getStoreKey).toHaveBeenCalledWith('uuid-1');
     expect(getStoreKey).toHaveBeenCalledWith('uuid-2');
+  });
+  
+  /** DELETE requests */
+
+  test('it should return error code when service fails to save blob', async () => {
+    const blobId = '982342384723sdifjhsdf';
+    const deleteRequest = new Request(`${apiEndpointUrl}/${blobId}`, { method: 'DELETE' });
+    deleteStoreKey.mockRejectedValue({ error: 'API Key not found'});
+
+    const { DELETE } = await import('../../../src/pages/api/update/[id].json');
+    const apiResponse: Response = await DELETE({
+      params: {},
+      request: deleteRequest
+    });
+
+    expect(apiResponse.ok).toBe(false);
+    expect(apiResponse.status).toBe(500);
+  });
+
+  test('it should delete the correct data payload when provided a blob id parameter', async () => {
+    const blobId = '982342384723sdifjhsdf';
+    const deleteRequest = new Request(`${apiEndpointUrl}/${blobId}`, { method: 'DELETE' });
+    deleteStoreKey.mockResolvedValue(`deleted blob id ${blobId}`);
+
+    const { DELETE } = await import('../../../src/pages/api/update/[id].json');
+    const apiResponse: Response = await DELETE({
+      params: {},
+      request: deleteRequest
+    });
+
+    expect(deleteStoreKey).toHaveBeenCalled();
+    expect(apiResponse.ok).toBeTruthy();
+    expect(apiResponse.status).toBe(200);
   });
 });

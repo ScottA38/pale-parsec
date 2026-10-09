@@ -8,7 +8,7 @@ export type blogEntry = {
     date: Date,
     subheading: String,
     body: String,
-    link: String,
+    author: String,
     images: Array<String>,
     tags: Array<String>, 
   },
@@ -20,7 +20,7 @@ const updateSchema = zod.object({
       title: zod.string(),
       subheading: zod.string().optional(),
       body: zod.string(),
-      link: zod.url().optional(),
+      author: zod.string(),
       images: zod.array(
         zod.string().refine((val) => val.match(/\.jpg$|\.png$|\.avif$|\.webp$/))
       ).optional(),

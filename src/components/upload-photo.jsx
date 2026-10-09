@@ -1,5 +1,13 @@
 import { v7 as uuidGen } from 'uuid';
+const { isAuthenticated, userId, redirectToSignIn } = Astro.locals.auth();
 
+<<<<<<< HEAD
+=======
+if (!isAuthenticated) {
+  redirectToSignIn();
+}
+
+>>>>>>> rss
 export default function UploadForm() {
   async function handleSubmit(e) {
     e.preventDefault();
@@ -13,6 +21,7 @@ export default function UploadForm() {
         }
       }
     };
+
     if (log === null) {
       console.error('Could not find element with id \'log\'');
 
@@ -25,9 +34,7 @@ export default function UploadForm() {
       return;
     }
 
-    console.log('form is valid');
     for (const [ key, value ] of formData.entries()) {
-      console.log(key, value);
       if (key === 'tags') {
         dataSkeleton.blog.content[key] = value.split(",").map(v => v.trim());
         continue;
@@ -46,7 +53,7 @@ export default function UploadForm() {
       const responseJson = await apiResponse.json();
 
       if (responseJson.status === 400) {
-        alert(responseJson)
+        return new Response(`Failed to upload form: ${responseJson.message}`);
       }
     }
   }
@@ -61,12 +68,11 @@ export default function UploadForm() {
         <input type="text" name="subheading" id="subheading" form="upload-form" />
         <label htmlFor="content">Content</label>
         <textarea rows="5" cols="40" name="body" id="body" form="upload-form" required />
-        <label htmlFor="related-link">Related Link</label>
-        <input type="url" name="link" title="related-link" id="related-link" form="upload-form" />
         <label htmlFor="images">Related Images</label>
         <input type="image" name="images" title="related-images" id="related-images" form="upload-form" multiple />
         <label htmlFor="tags">Tags</label>
         <input type="text" name="tags" title="article-tags" id="tags" form="upload-form" />
+        <input type="hidden" name="author" value={userId} form="upload-form" />
         <input type="submit"/>
       </form> 
     </div>
