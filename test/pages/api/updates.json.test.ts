@@ -97,19 +97,21 @@ describe('band updates portal api', () => {
       },
     ];
     listStore.mockResolvedValue({
-      blobs: [{ key: 'uuid-1' }, { key: 'uuid-2' }]
+      blobs: [{ key: 'ar4nd0mbl0bk3y1' }, { key: 'ar4nd0mbl0bk3y2' }]
     });
-    getStoreKey.mockImplementation(async (key: string) =>
-      mockBlobData.find((blob) => blob.uuid === key)
-    );
+    getStoreKey.mockResolvedValueOnce(mockBlobData[0]);
+    getStoreKey.mockResolvedValueOnce(mockBlobData[1]);
     const { GET } = await import('../../../src/pages/api/updates.json');
     const apiResponse: Response = await GET();
 
     expect(apiResponse.status).toBe(200);
-    expect(await apiResponse.json()).toEqual(mockBlobData);
+    expect(await apiResponse.json()).toEqual(expect.arrayContaining([
+      { 'ar4nd0mbl0bk3y1': expect.objectContaining(mockBlobData[0]) },
+      { 'ar4nd0mbl0bk3y2': expect.objectContaining(mockBlobData[1]) }
+    ]));
     expect(listStore).toHaveBeenCalledOnce();
-    expect(getStoreKey).toHaveBeenCalledWith('uuid-1');
-    expect(getStoreKey).toHaveBeenCalledWith('uuid-2');
+    expect(getStoreKey).toHaveBeenCalledWith('ar4nd0mbl0bk3y1');
+    expect(getStoreKey).toHaveBeenCalledWith('ar4nd0mbl0bk3y2');
   });
   
   /** DELETE requests */

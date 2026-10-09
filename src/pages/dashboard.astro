@@ -1,16 +1,51 @@
 ---
 import SiteLayout from "../layouts/SiteLayout.astro";
+import { createClerkClient } from "@clerk/astro/server";
 const { isAuthenticated, userId, redirectToSignIn } = Astro.locals.auth();
 
 if (!isAuthenticated) {
   return redirectToSignIn()
 }
 
+/** Component import */
 import UserWelcome from "../components/Welcome";
+import PostCard from "../components/dashboard/post-card";
+import type { blogEntry } from "./api/updates.json";
+import { base64 } from "astro:schema";
+
+/** Fetching blog updates */
+const activeBlobs = await fetch(
+  new URL('/api/updates.json', Astro.url),
+  { method: 'GET' }
+);
+const activeBlobsJson = await activeBlobs.json();
+const clerk = await createClerkClient({
+  publishableKey: import.meta.env.PUBLIC_CLERK_PUBLISHABLE_KEY,
+  secretKey: import.meta.env.CLERK_SECRET_KEY
+});
+const userList = await clerk.users.getUserList();
 ---
 
 <SiteLayout>
   <UserWelcome client:load />
+  {
+    activeBlobsJson.map(async (blob: any) => {
+      const blobKey = Object.keys(blob)[0];
+      const blobJson = JSON.parse(blob[blobKey]);
+      const author = await userList.data.find((user) => user.username === blobJson.content.author);
+
+      return (<PostCard
+        title={ blobJson.content.title }
+        subheading={ blobJson.content.subheading }
+        authorName={ author?.username ?? 'Unknown' }
+        date={blobJson.content.date}
+        body={blobJson.content.body}
+        images={blobJson.content.images}
+        tags={blobJson.content.tags}
+        client:load
+      />)
+    })
+  }
 </SiteLayout>
 <style lang="scss">
   @use '../styles/text.scss' as t;

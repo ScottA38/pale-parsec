@@ -1,38 +1,53 @@
+import { useEffect, useState } from 'react';
 import { useStore } from '@nanostores/react';
 import { $userStore } from "@clerk/astro/client";
 import '../styles/welcome.scss';
 
 export default function UserWelcome() {
   const user = useStore($userStore);
-  
-  if (user === undefined) {
+  const [hasMounted, setHasMounted] = useState(false);
+
+  useEffect(() => {
+    setHasMounted(true);
+  }, []);
+
+  if (!hasMounted || user === undefined) {
     return (
-      <strong>
-        <span className="loading user-data">Booting up your user data</span>
-      </strong>
+      <div className="welcome container" aria-busy="true" aria-label="Loading user data">
+        <div className="welcome avatar skeleton" aria-hidden="true" />
+        <div className="welcome stats">
+          <span className="welcome title">
+            <span className="skeleton skeleton-text" aria-hidden="true" />
+          </span>
+          <span className="welcome-stats posts">
+            <span className="skeleton skeleton-text" aria-hidden="true" />
+          </span>
+          <span className="welcome-stats posts">
+            <span className="skeleton skeleton-text" aria-hidden="true" />
+          </span>
+        </div>
+      </div>
     );
   }
 
   if (user === null) {
     return (
-      <strong>
-        <span className="user-data">Please sign in to continue.</span>;
-      </strong>
+      <div className="welcome container">
+        <span className="user-data">Please sign in to continue.</span>
+      </div>
     );
   }
-  
+
   return (
-    <div class="welcome container">
-      <img class="welcome avatar" src={user.imageUrl} alt={user.username} />
-      <span class="welcome declaration">
-        <div class="welcome stats">
-          <span class="welcome title">
-            <strong>Welcome, { user.username }</strong>
-          </span>
-          <span class="welcome-stats posts"># posts: [# posts]</span>
-          <span class="welcome-stats posts">Joined @ [Date]</span>
-        </div>
-      </span>
+    <div className="welcome container">
+      <img className="welcome avatar" src={ user.imageUrl } alt={ user.username } />
+      <div className="welcome stats">
+        <span className="welcome title">
+          <strong>Welcome, { user.username }</strong>
+        </span>
+        <span className="welcome-stats posts"># posts: # posts</span>
+        <span className="welcome-stats posts">Joined @ Date</span>
+      </div>
     </div>
   );
 }

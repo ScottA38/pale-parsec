@@ -1,0 +1,27 @@
+.post.card {
+  &.update-entry {
+    display: grid;
+    margin-bottom: 1.5rem;
+    padding: 1.5rem;
+    border-radius: 0.5rem;
+    max-width: 70vw;
+    background-color: antiquewhite;
+  }
+
+  .update-entry {
+    &__tags {
+      border: 1px solid black;
+
+      .tag:not(:last-child)::after {
+        content: ',';
+        margin-right: .25rem;
+      }
+    }
+    
+    &__tag-label {
+      margin-right: 0.5rem;
+    }
+
+    
+  }
+}

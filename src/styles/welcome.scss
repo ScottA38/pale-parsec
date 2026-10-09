@@ -22,10 +22,33 @@ $welcome-border-radius: 0.5rem;
     border-radius: $welcome-border-radius;
   }
 
+  &.avatar.skeleton {
+    width: 5rem;
+    height: 5rem;
+  }
+
   &.stats {
     span {
       display: block;
     }
+  }
+}
+
+.skeleton {
+  display: block;
+  border-radius: 0.25rem;
+  background-color: #d8c9b2;
+  animation: welcome-skeleton-pulse 1.5s ease-in-out infinite;
+
+  &.skeleton-text {
+    width: 8rem;
+    height: 1rem;
+  }
+}
+
+@keyframes welcome-skeleton-pulse {
+  50% {
+    opacity: 0.5;
   }
 }
 

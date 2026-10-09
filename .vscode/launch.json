@@ -9,6 +9,12 @@
       "type": "node-terminal"
     },
     {
+      "command": "node --inspect-brk=9229 ./node_modules/astro/bin/astro.mjs dev",
+      "name": "Astro server (Node debugger)",
+      "request": "launch",
+      "type": "node-terminal"
+    },
+    {
       "command": "netlify dev",
       "name": "netlify server",
       "request": "launch",

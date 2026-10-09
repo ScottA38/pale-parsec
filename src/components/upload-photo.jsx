@@ -1,13 +1,10 @@
 import { v7 as uuidGen } from 'uuid';
 const { isAuthenticated, userId, redirectToSignIn } = Astro.locals.auth();
 
-<<<<<<< HEAD
-=======
 if (!isAuthenticated) {
   redirectToSignIn();
 }
 
->>>>>>> rss
 export default function UploadForm() {
   async function handleSubmit(e) {
     e.preventDefault();

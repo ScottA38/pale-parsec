@@ -57,8 +57,9 @@ export const GET = async () => {
   const storeList = [];
 
   for await (const blob of (await blogStore.list()).blobs) {
-    const blobObject = await blogStore.get(blob.key); 
-    storeList.push(blobObject);
+    const blobKey: string = blob.key
+    const blobObject = await blogStore.get(blobKey);
+    storeList.push({ [blobKey] : blobObject });
   }
 
   return new Response(JSON.stringify(storeList));
