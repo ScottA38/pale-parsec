@@ -1,4 +1,9 @@
 import { v7 as uuidGen } from 'uuid';
+const { isAuthenticated, userId, redirectToSignIn } = Astro.locals.auth();
+
+if (!isAuthenticated) {
+  redirectToSignIn();
+}
 
 export default function UploadForm() {
   async function handleSubmit(e) {
@@ -60,12 +65,11 @@ export default function UploadForm() {
         <input type="text" name="subheading" id="subheading" form="upload-form" />
         <label htmlFor="content">Content</label>
         <textarea rows="5" cols="40" name="body" id="body" form="upload-form" required />
-        <label htmlFor="related-link">Related Link</label>
-        <input type="url" name="link" title="related-link" id="related-link" form="upload-form" />
         <label htmlFor="images">Related Images</label>
         <input type="image" name="images" title="related-images" id="related-images" form="upload-form" multiple />
         <label htmlFor="tags">Tags</label>
         <input type="text" name="tags" title="article-tags" id="tags" form="upload-form" />
+        <input type="hidden" name="author" value={userId} form="upload-form" />
         <input type="submit"/>
       </form> 
     </div>
