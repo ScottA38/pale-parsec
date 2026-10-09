@@ -1,10 +1,11 @@
 import { vi, expect, test, describe } from 'vitest';
 
-const { setStoreKey, getStoreKey, deleteStoreKey, listStore } = vi.hoisted(() => ({
+const { setStoreKey, getStoreKey, deleteStoreKey, listStore, uuidGenMock } = vi.hoisted(() => ({
   setStoreKey: vi.fn(),
   getStoreKey: vi.fn(),
   deleteStoreKey: vi.fn(),
-  listStore: vi.fn()
+  listStore: vi.fn(),
+  uuidGenMock: vi.fn(),
 }));
 
 vi.mock("@netlify/blobs", () => ({
@@ -16,20 +17,23 @@ vi.mock("@netlify/blobs", () => ({
   }))
 }));
 
+vi.mock('uuid', () => ({
+  v7: uuidGenMock.mockReturnValue('a-uuid-string'),
+}));
+
 const apiEndpointUrl = 'http://localhost:4321/api/updates.json';
 describe('band updates portal api', () => {
   /** POST Requests */
-  test('it should reject a malformed request without uuid', async () => {
+  test('it should reject a request with malformed data', async () => {
     const { POST } = await import('../../../src/pages/api/updates.json');
     const request = new Request(apiEndpointUrl, {
       method: 'POST',
       body: JSON.stringify({
         blog: {
           content: {
-            title: 'New Tour Dates released again',
             subheading: 'On the Road again: Southport',
             body: 'Tour dates announced for next month',
-            link: 'https://www.songkick.com/tour-dates',
+            author: 'a-fan-of-the-band',
             images: [ 'image-1.png', 'image-2.png', 'image-3.png' ],
             tags: ['update', 'tour', 'shows', 'performance', 'schedule']
           }
@@ -49,11 +53,10 @@ describe('band updates portal api', () => {
       body: JSON.stringify({
         blog: {
           content: {
-            uuid: 'a-uuid-string',
             title: 'New Tour Dates released again',
             subheading: 'On the Road again: Southport',
             body: 'Tour dates announced for next month',
-            link: 'https://www.songkick.com/tour-dates',
+            author: 'a-fan-of-the-band',
             images: [ 'image-1.png', 'image-2.png', 'image-3.png' ],
             tags: ['update', 'tour', 'shows', 'performance', 'schedule']
           },

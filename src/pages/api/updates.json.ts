@@ -1,5 +1,6 @@
-import { type Store, getStore, listStores } from '@netlify/blobs';
+import { type Store, getStore } from '@netlify/blobs';
 import * as zod from 'zod';
+import { v7 as uuidGen } from 'uuid';
 
 export type blogEntry = {
   content: {
@@ -16,7 +17,6 @@ export type blogEntry = {
 const updateSchema = zod.object({
   blog: zod.object({
     content: zod.object({
-      uuid: zod.string(),
       title: zod.string(),
       subheading: zod.string().optional(),
       body: zod.string(),
@@ -43,11 +43,9 @@ export const POST = async ({ request }: { request: Request }) => {
   }
 
   const validatedBlog = validationResponse.data.blog;
-  const uuidKey = validatedBlog.content.uuid;
-  await blogStore.set(
-    uuidKey,
-    new Blob([JSON.stringify(validatedBlog)], { type: "application/json" })
-  );
+  const uuidKey = uuidGen();
+  const updatePayload = new Blob([JSON.stringify(validatedBlog)], { type: "application/json" })
+  await blogStore.set( uuidKey, updatePayload );
 
   return new Response(
     JSON.stringify({ message: `Band update successfully uploaded as ${uuidKey}` })
