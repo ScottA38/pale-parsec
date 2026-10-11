@@ -1,11 +1,23 @@
 import { v7 as uuidGen } from 'uuid';
+import { useState } from 'react';
+import TagsInput from './TagsInput';
 const { isAuthenticated, userId, redirectToSignIn } = Astro.locals.auth();
+const currentUser = await Astro.locals.currentUser();
 
 if (!isAuthenticated) {
   redirectToSignIn();
 }
 
 export default function UploadForm() {
+  const errors = [];
+  const [ formData, setFormData ] = useState({
+    title: '',
+    subheading: '',
+    body: '',
+    tags: '',
+    author: currentUser.username
+  });
+
   async function handleSubmit(e) {
     e.preventDefault();
     const form = e.target;
@@ -69,7 +81,7 @@ export default function UploadForm() {
         <input type="image" name="images" title="related-images" id="related-images" form="upload-form" multiple />
         <label htmlFor="tags">Tags</label>
         <input type="text" name="tags" title="article-tags" id="tags" form="upload-form" />
-        <input type="hidden" name="author" value={userId} form="upload-form" />
+        <input type="hidden" name="author" value={currentUser.username} form="upload-form" />
         <input type="submit"/>
       </form> 
     </div>
