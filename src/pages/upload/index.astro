@@ -1,9 +1,21 @@
 ---
 import AdminLayout from "../../layouts/AdminLayout.astro";
 import UploadForm from "../../components/upload/UploadForm";
+
+const { isAuthenticated, userId, redirectToSignIn } = Astro.locals.auth();
+if (!isAuthenticated) {
+  redirectToSignIn();
+}
+
+const currentUser = await Astro.locals.currentUser();
+if (currentUser == null ) {
+  console.error('Unable to identify current user');
+
+  return redirectToSignIn();
+}
 ---
 
 <AdminLayout>
   <h2>Share your story!: </h2>
-  <UploadForm client:load />
+  <UploadForm currentUser={currentUser} client:load />
 </AdminLayout>

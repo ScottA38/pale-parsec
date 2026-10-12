@@ -1,64 +1,70 @@
 import { v7 as uuidGen } from 'uuid';
 import { useState } from 'react';
+import { validateTagInput } from './TagsInput';
 import TagsInput from './TagsInput';
-const { isAuthenticated, userId, redirectToSignIn } = Astro.locals.auth();
-const currentUser = await Astro.locals.currentUser();
+import ImageUploader from './ImageUploader';
 
-if (!isAuthenticated) {
-  redirectToSignIn();
-}
-
-export default function UploadForm() {
+export default function UploadForm({ currentUser }) {
   const errors = [];
   const [ formData, setFormData ] = useState({
     title: '',
     subheading: '',
     body: '',
     tags: '',
+    image: '',
     author: currentUser.username
   });
+
+  function handleTextInput(e) {
+    const escapedValue = e.target.value
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;")
+          .replace(/"/g, "&quot;")
+          .replace(/'/g, "&#39;");
+    if (escapedValue == "") {
+      errors.push(`Please include test content in ${e.target.name}`)
+    }
+
+    setFormData((previousFormData) => ({
+      ...previousFormData,
+      [e.target.name]: escapedValue
+    }));
+  }
 
   async function handleSubmit(e) {
     e.preventDefault();
     const form = e.target;
-    const formData = new FormData(form);
-    const log = document.getElementById('log');
+
+    if (!form.checkValidity()) {
+      errors.push('Please fill in all required fields.');
+      return;
+    }
+
+    if (validateTagInput(formData.tags).length > 0) {
+      return;
+    }
+
     const dataSkeleton = {
       blog: {
         content: {
-          images: []
+          title: formData.title,
+          subheading: formData.subheading,
+          body: formData.body,
+          author: formData.author,
+          images: formData.image ? [formData.image] : [],
+          tags: formData.tags.split(",").map((tag) => tag.trim()),
+          uuid: uuidGen()
         }
       }
     };
 
-    if (log === null) {
-      console.error('Could not find element with id \'log\'');
-
-      return;
-    }
-    
-    if (!form.checkValidity()) {
-      log.textContent = 'Please fill in all required fields.';
-
-      return;
-    }
-
-    for (const [ key, value ] of formData.entries()) {
-      if (key === 'tags') {
-        dataSkeleton.blog.content[key] = value.split(",").map(v => v.trim());
-        continue;
-      }
-
-      dataSkeleton.blog.content[key] = value ?? ""; 
-    }
-
-    dataSkeleton.blog.content['uuid'] = uuidGen();
     const apiResponse = await fetch(form.action, {
       method: form.method,
       body: JSON.stringify(dataSkeleton)
     });
 
-    if (!apiResponse.ok()) {
+    if (!apiResponse.ok) {
       const responseJson = await apiResponse.json();
 
       if (responseJson.status === 400) {
@@ -69,21 +75,35 @@ export default function UploadForm() {
 
   return (
     <div className="upload container">
-      <span className="validation log" id="log"></span>
+      <ul className="validation error log" id="log">
+        {
+          errors.map((error) => (
+            <li class="validation error item">{error}</li>
+          ))
+        }
+      </ul>
       <form action="/api/updates.json" method="post" onSubmit={handleSubmit} id="upload-form">
         <label htmlFor="title">Title</label>
-        <input type="text" name="title" id="title" form="upload-form" required />
+        <input type="text" name="title" id="title" form="upload-form" onChange={handleTextInput} required />
         <label htmlFor="subheading">Subheading</label>
-        <input type="text" name="subheading" id="subheading" form="upload-form" />
-        <label htmlFor="content">Content</label>
-        <textarea rows="5" cols="40" name="body" id="body" form="upload-form" required />
-        <label htmlFor="images">Related Images</label>
-        <input type="image" name="images" title="related-images" id="related-images" form="upload-form" multiple />
-        <label htmlFor="tags">Tags</label>
-        <input type="text" name="tags" title="article-tags" id="tags" form="upload-form" />
+        <input type="text" name="subheading" id="subheading" onChange={handleTextInput} form="upload-form" />
+        <label htmlFor="body">Content</label>
+        <textarea rows="5" cols="40" name="body" id="body" form="upload-form" onChange={handleTextInput} required />
+        <ImageUploader formTarget="upload-form" changeHandler={(image64Bit) => {
+          setFormData((previousFormData) => ({
+            ...previousFormData,
+            image: image64Bit
+          }));
+        }} />
+        <TagsInput formTarget={'upload-form'} changeHandler={(e) => {
+          setFormData((previousFormData) => ({
+            ...previousFormData,
+            tags: e.target.value
+          }));
+        }} />
         <input type="hidden" name="author" value={currentUser.username} form="upload-form" />
         <input type="submit"/>
-      </form> 
+      </form>
     </div>
   );
 }

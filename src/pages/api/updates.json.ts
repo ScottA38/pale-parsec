@@ -10,10 +10,11 @@ export type blogEntry = {
     subheading: String,
     body: String,
     author: String,
-    images: Array<String>,
+    image: Array<String>,
     tags: Array<String>, 
   },
 }
+const base64regex = /^data:image\/(jpeg|png|avif|webp);base64,[A-Za-z0-9+/]+={0,2}$/;
 const updateSchema = zod.object({
   blog: zod.object({
     content: zod.object({
@@ -21,8 +22,8 @@ const updateSchema = zod.object({
       subheading: zod.string().optional(),
       body: zod.string(),
       author: zod.string(),
-      images: zod.array(
-        zod.string().refine((val) => val.match(/\.jpg$|\.png$|\.avif$|\.webp$/))
+      image: zod.array(
+        zod.string().refine((val) => base64regex.test(val))
       ).optional(),
       tags: zod.array(zod.string()),
     })

@@ -10,8 +10,6 @@ if (!isAuthenticated) {
 /** Component import */
 import UserWelcome from "../components/Welcome";
 import PostCard from "../components/dashboard/post-card";
-import type { blogEntry } from "./api/updates.json";
-import { base64 } from "astro:schema";
 
 /** Fetching blog updates */
 const activeBlobs = await fetch(
