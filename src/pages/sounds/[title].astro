@@ -1,0 +1,46 @@
+---
+export const prerender = true;
+const { title } = Astro.params;
+import type { GetStaticPaths } from "astro";
+import { Soundcloud, type SoundcloudComment } from "soundcloud.ts";
+import { type SoundcloudTrack } from "soundcloud.ts";
+
+export const getStaticPaths = (async () => {
+  const sc: Soundcloud = new Soundcloud(
+    import.meta.env.PUBLIC_SOUNDCLOUD_CLIENT_ID,
+    await Astro.session?.get('soundcloud_token')
+  );
+  const tracks = await sc.users.tracks("jerryrigg");
+  
+  return tracks.map(async (track: SoundcloudTrack) => {
+    const comments: SoundcloudComment[] = await sc.tracks.comments(track.id);
+
+    return {
+      params: {
+        title: track.title
+      },
+      props: {
+        track: { ...track },
+        comments: [ ...comments ]
+      },
+    }
+  });
+}) satisfies GetStaticPaths;
+
+const { track, comments } = Astro.props;
+---
+
+<h2>This is a page for the track {title}</h2>
+
+<li class="track comments container">
+  {
+    comments.map((comment) => {
+      return (
+        <div class="track comment">
+          <p>{ comment.body }</p>
+          <small>by { comment.user.username }</small>
+        </div>
+      )
+    })
+  }
+</li>

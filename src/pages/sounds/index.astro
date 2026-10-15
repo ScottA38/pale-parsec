@@ -1,0 +1,66 @@
+---
+title: 'A new soundtrack'
+tags: [ 'tracks', 'music', 'recordings' ]
+
+import MainLayout  from "../../layouts/MainLayout.astro";
+const artistURN = process.env.SOUNDCLOUD_ARTIST_URN;
+if (!artistURN) {
+  console.error('SoundCloud Artist URN is not configured!');
+}
+
+const scBase64Key = btoa(process.env.SOUNDCLOUD_CLIENT_ID + ':' + process.env.SOUNDCLOUD_SECRET_KEY);
+const soundCloudAuthResponse = await fetch('https://secure.soundcloud.com/oauth/token', {
+  method: 'POST',
+  headers: {
+    'accept': 'application/json',
+    'Content-Type': 'application/x-www-form-urlencoded',
+    'Authorization': `Basic ${scBase64Key}`
+  },
+  body: encodeURI('grant_type=client_credentials')
+});
+const authRequestData = await soundCloudAuthResponse.json();
+if (authRequestData.access_token === undefined) {
+  console.error('Unable to obtain SoundCloud access token');
+
+  return Astro.redirect("/dashboard")
+}
+
+const targetTracks = await fetch(`https://api.soundcloud.com/users/${encodeURI(artistURN)}/tracks`, {
+    headers: {
+      "accept": "application/json; charset=utf-8",
+      "Authorization": `OAuth ${authRequestData.access_token}`
+    }
+  }
+);
+const targetTracksJson = await targetTracks.json();
+if (!targetTracks.ok) {
+  console.error(targetTracksJson.status);
+
+  return Astro.redirect("/dashboard")
+} else if (targetTracksJson.collections === undefined) {
+  console.error('Unable to obtain SoundCloud tracks');
+
+  return Astro.redirect("/dashboard");
+}
+
+
+---
+
+<MainLayout title="My Sounds">
+  <div class="tracks container">
+    {
+      targetTracksJson.collection.map((track: any) => {
+        return (
+          <div class="track">
+            <h3>{ track.title }</h3>
+            <p>{ track.description }</p>
+            <audio controls>
+              <source src={ track.stream_url + `?client_id=${import.meta.env.PUBLIC_SOUNDCLOUD_CLIENT_ID}` } type="audio/mpeg" />
+              Your browser does not support the audio element.
+            </audio>
+          </div>
+        )
+      })
+    }
+  </div>
+</MainLayout>
