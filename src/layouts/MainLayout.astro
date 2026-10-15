@@ -1,5 +1,6 @@
 ---
 import Header from '../components/Header.astro';
+const { title } = Astro.props;
 ---
 
 <html lang="en">
@@ -14,6 +15,7 @@ import Header from '../components/Header.astro';
 	<body>
     <Header title="Freedom Driver"/>
     <article class="main-page">
+      <h2 class="main-page title">{ title }</h2>
       <slot />
     </article>
 	</body>

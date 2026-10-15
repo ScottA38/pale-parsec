@@ -3,23 +3,33 @@ $welcome-border-radius: 0.5rem;
 .welcome {
   &.container {
     display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+    position: fixed;
+    right: 0;
+    // grid-template-columns: repeat(3, minmax(0, 1fr));
     gap: 0.5rem;
     padding: 0.5rem;
     box-sizing: border-box;
     align-items: center;
     justify-items: center;
-    width: 100%;
+    // width: 100%;
     
     border-radius: $welcome-border-radius;
     background-color: blanchedalmond;
+
+    .stats {
+      display: none;
+    }
+
+    &:hover .stats {
+      display: block;
+    }
   }
 
   &.avatar {
-    // border: .5rem ridge grey;
     box-sizing: border-box;
-    // border-spacing: 1rem;
     border-radius: $welcome-border-radius;
+
+    
   }
 
   &.avatar.skeleton {
@@ -55,7 +65,7 @@ $welcome-border-radius: 0.5rem;
 @media (min-width: 860px) {
   .welcome {
     &.container {
-        position: absolute;
+        position: fixed;
         grid-template-columns: auto;
         width: auto;
         right: 0;
