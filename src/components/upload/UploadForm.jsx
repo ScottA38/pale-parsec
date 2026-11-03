@@ -71,6 +71,8 @@ export default function UploadForm({ currentUser }) {
         return new Response(`Failed to upload form: ${responseJson.message}`);
       }
     }
+
+    return Astro.redirect('/dashboard');
   }
 
   return (

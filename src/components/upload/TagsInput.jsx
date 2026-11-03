@@ -1,17 +1,17 @@
 import { useState } from 'react';
 
 export function validateTagInput(tagInputValue) {
+  // accept only values for each tag entry which do not have punctuation beyond a dash
   const formatValidation = /^(\s?[\w\d_\-]+\s*\,?)+$/
-
-    if (tagInputValue === '') {
-      return [ 'Please enter some tags'];
-    } 
-    
-    if (!tagInputValue.match(formatValidation)) {
-      return ['Tags must have no punctuation and each be separated by a comma'];
-    }
-    
-    return [];
+  if (tagInputValue === '') {
+    return [ 'Please enter some tags'];
+  } 
+  
+  if (!tagInputValue.match(formatValidation)) {
+    return [ 'Tags must have no punctuation and each be separated by a comma' ];
+  }
+  
+  return [];
 }
 
 export default function TagsInput({ formTarget, changeHandler }) {
