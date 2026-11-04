@@ -1,24 +1,6 @@
 import type { APIContext } from 'astro';
 import { vi, expect, describe, test, beforeEach, afterEach } from 'vitest';
 
-// const { clerkClientMock } = vi.hoisted(() => {
-//   return {
-//     clerkClientMock:
-//       (class {
-//         private context: APIContext;
-//         constructor(context: APIContext) {
-//           this.context = context;
-//         }
-
-//         users =  {
-//           getUser: vi.fn()
-//         }
-
-//         public updateUserPrivateMetadata = vi.fn() 
-//       })
-//   }
-// });
-
 const { clerkClientMock, getUserMock, updateUserMetadataMock } = vi.hoisted(() => {
   const getUserMock = vi.fn();
   const updateUserMetadataMock = vi.fn();
@@ -157,5 +139,37 @@ describe('User count middleware', () => {
         }
       })
     );
+  });
+
+  test('it should fail to take an action when a successful DELETE request is intercepted and the post-count is already 0', async () => {
+    vi.spyOn(globalThis.console, 'error');
+    const exampleUserId: string = '12321dskfjndsf';
+    getUserMock.mockImplementation((userId: string) => {
+      return {
+        id: exampleUserId,
+        username: 'test=1234567789',
+        privateMetadata: { postCount: 0 }
+      };
+    });
+
+    // Mock a sample API Request payload
+    const exampleRequest = new Request(`http://localhost:4321/api/update/${exampleUserId}`, { method: 'DELETE', });
+    const sampleContext = { 
+      request: exampleRequest,
+      site: {
+        host: 'localhost:4321',
+      },
+      locals: {
+        auth: () => ({
+          userId: exampleUserId
+        })
+      }
+    } as unknown as APIContext;
+    
+    const { addPostCountToClerk } = await import('../src/middleware');
+    await addPostCountToClerk(sampleContext, async () => new Response('ok'));
+
+    expect(updateUserMetadataMock).not.toHaveBeenCalled();
+    expect(globalThis.console.error).toHaveBeenCalledOnce()
   });
 });

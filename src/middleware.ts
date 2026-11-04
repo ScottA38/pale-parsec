@@ -35,9 +35,16 @@ export const addPostCountToClerk = async (_: APIContext, next: MiddlewareNext): 
       });
     // 'Remove' route
     } else if (requestMethod == 'DELETE') {
+      const newCount : number = --postCount;
+      if (newCount < 0) {
+        console.error(`Invalid post count ${postCount}`);
+
+        return response;
+      }
+      
       clerk.users.updateUserMetadata(userId, {
         privateMetadata: {
-          postCount: typeof postCount == 'number' ? --postCount : 0
+          postCount: typeof postCount == 'number' ? newCount : 0
         }
       });
     }
