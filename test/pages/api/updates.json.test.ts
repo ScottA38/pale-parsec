@@ -29,14 +29,12 @@ describe('band updates portal api', () => {
     const request = new Request(apiEndpointUrl, {
       method: 'POST',
       body: JSON.stringify({
-        blog: {
-          content: {
-            subheading: 'On the Road again: Southport',
-            body: 'Tour dates announced for next month',
-            author: 'a-fan-of-the-band',
-            images: [ 'image-1.png', 'image-2.png', 'image-3.png' ],
-            tags: ['update', 'tour', 'shows', 'performance', 'schedule']
-          }
+        content: {
+          subheading: 'On the Road again: Southport',
+          body: 'Tour dates announced for next month',
+          userId: 'a-fan-of-the-band',
+          images: [ 'image-1.png', 'image-2.png', 'image-3.png' ],
+          tags: ['update', 'tour', 'shows', 'performance', 'schedule']
         }
       }),
     });
@@ -51,16 +49,14 @@ describe('band updates portal api', () => {
     const request = new Request(apiEndpointUrl, {
       method: 'POST',
       body: JSON.stringify({
-        blog: {
-          content: {
-            title: 'New Tour Dates released again',
-            subheading: 'On the Road again: Southport',
-            body: 'Tour dates announced for next month',
-            author: 'a-fan-of-the-band',
-            images: [ 'image-1.png', 'image-2.png', 'image-3.png' ],
-            tags: ['update', 'tour', 'shows', 'performance', 'schedule']
-          },
-        }
+        content: {
+          title: 'New Tour Dates released again',
+          subheading: 'On the Road again: Southport',
+          body: 'Tour dates announced for next month',
+          userId: 'a-fan-of-the-band',
+          images: [ 'image-1.png', 'image-2.png', 'image-3.png' ],
+          tags: ['update', 'tour', 'shows', 'performance', 'schedule']
+        },
       }),
     });
 
@@ -78,22 +74,24 @@ describe('band updates portal api', () => {
   test('it should allow the user to retrieve all band updates', async () => {
     const mockBlobData = [
       {
-        uuid: 'uuid-1',
-        title: 'blob-1',
-        subheading: "wysiwg",
-        body: 'this is blob-1\'s content',
-        link: "https://wysiwyg.com",
-        images: ['image-1.jpg'],
-        tags: ['tag-1', 'tag-2'],
+        content: {
+          title: 'blob-1',
+          subheading: "wysiwg",
+          body: 'this is blob-1\'s content',
+          userId: "adskjhbf123456789",
+          image: ['data:image/jpeg;base64,/9j/4Q/+RXhpZgAATU0AKgAAAAgABgESAAMAAAABAAEAAAEaAAUAAAABAAAAVgEbAAUAAAABAAAAXgEo'],
+          tags: ['tag-1', 'tag-2'],
+        }
       },
       {
-        uuid: 'uuid-2',
-        title: '2 blob 4u1 holmes',
-        subheading: "gangsta",
-        body: 'this is blob-2\'s content',
-        link: "https://wysiwyg.two.com",
-        images: ['extra-mints.refurb.jpg'],
-        tags: ['tag-1', 'tag-2'],
+        content: {
+          title: '2 blob 4u1 holmes',
+          subheading: "gangsta",
+          body: 'this is blob-2\'s content',
+          userId: "adskjhbf123456789",
+          image: ['data:image/jpeg;base64,/9j/4Q/+RXhpZgAATU0AKgAAAAgABgESAAMAAAABAAEAAAEaAAUAAAABAAAAVgEbAAUAAAABAAAAXgED'],
+          tags: ['tag-1', 'tag-2'],
+        }
       },
     ];
     listStore.mockResolvedValue({
@@ -110,8 +108,8 @@ describe('band updates portal api', () => {
       { 'ar4nd0mbl0bk3y2': expect.objectContaining(mockBlobData[1]) }
     ]));
     expect(listStore).toHaveBeenCalledOnce();
-    expect(getStoreKey).toHaveBeenCalledWith('ar4nd0mbl0bk3y1');
-    expect(getStoreKey).toHaveBeenCalledWith('ar4nd0mbl0bk3y2');
+    expect(getStoreKey).toHaveBeenCalledWith('ar4nd0mbl0bk3y1', { type: 'json'});
+    expect(getStoreKey).toHaveBeenCalledWith('ar4nd0mbl0bk3y2', { type: 'json'});
   });
   
   /** DELETE requests */

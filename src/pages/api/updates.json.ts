@@ -2,38 +2,26 @@ import { type Store, getStore } from '@netlify/blobs';
 import * as zod from 'zod';
 import { v7 as uuidGen } from 'uuid';
 
-export type blogEntry = {
-  content: {
-    uuid: String,
-    title: String,
-    date: Date,
-    subheading: String,
-    body: String,
-    author: String,
-    image: Array<String>,
-    tags: Array<String>, 
-  },
-}
+export type BlogEntry = zod.infer<typeof blogUpdateSchema>;
+type UpdatesResponse = Array<Record<string, BlogEntry>>;
 const base64regex = /^data:image\/(jpeg|png|avif|webp);base64,[A-Za-z0-9+/]+={0,2}$/;
-const updateSchema = zod.object({
-  blog: zod.object({
-    content: zod.object({
-      title: zod.string(),
-      subheading: zod.string().optional(),
-      body: zod.string(),
-      author: zod.string(),
-      image: zod.array(
-        zod.string().refine((val) => base64regex.test(val))
-      ).optional(),
-      tags: zod.array(zod.string()),
-    })
+const blogUpdateSchema = zod.object({
+  content: zod.object({
+    title: zod.string(),
+    subheading: zod.string().optional(),
+    body: zod.string(),
+    userId: zod.string(),
+    image: zod.array(
+      zod.string().refine((val) => base64regex.test(val))
+    ).optional(),
+    tags: zod.array(zod.string()),
   })
 });
 
 export const POST = async ({ request }: { request: Request }) => {
   const resJson = await request.json();
   const blogStore: Store = getStore('blog');
-  const validationResponse = updateSchema.safeParse(resJson);
+  const validationResponse = blogUpdateSchema.safeParse(resJson);
   if (validationResponse.error) {
     return new Response(
       JSON.stringify(
@@ -43,7 +31,7 @@ export const POST = async ({ request }: { request: Request }) => {
     );
   }
 
-  const validatedBlog = validationResponse.data.blog;
+  const validatedBlog = validationResponse.data;
   const uuidKey = uuidGen();
   const updatePayload = new Blob([JSON.stringify(validatedBlog)], { type: "application/json" })
   await blogStore.set( uuidKey, updatePayload );
@@ -55,12 +43,12 @@ export const POST = async ({ request }: { request: Request }) => {
 
 export const GET = async () => {
   const blogStore: Store = getStore('blog');
-  const storeList = [];
+  const storeList: UpdatesResponse = [];
 
   for await (const blob of (await blogStore.list()).blobs) {
-    const blobKey: string = blob.key
-    const blobObject = await blogStore.get(blobKey);
-    storeList.push({ [blobKey] : blobObject });
+    const blobObject = await blogStore.get(blob.key, { 'type': 'json' });
+    const entry = blogUpdateSchema.parse(blobObject);
+    storeList.push({ [blob.key] : entry });
   }
 
   return new Response(JSON.stringify(storeList));
