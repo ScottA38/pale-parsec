@@ -46,17 +46,13 @@ export default function UploadForm({ currentUser }) {
     }
 
     const dataSkeleton = {
-      blog: {
-        content: {
-          title: formData.title,
-          subheading: formData.subheading,
-          body: formData.body,
-          userId: currentUser.id,
-          author: formData.author,
-          images: formData.image ? [formData.image] : [],
-          tags: formData.tags.split(",").map((tag) => tag.trim()),
-          uuid: uuidGen()
-        }
+      content: {
+        title: formData.title,
+        subheading: formData.subheading,
+        body: formData.body,
+        userId: currentUser.id,
+        image: formData.image ? [formData.image] : [],
+        tags: formData.tags.split(",").map((tag) => tag.trim()),
       }
     };
 

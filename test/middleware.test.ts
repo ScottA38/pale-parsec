@@ -57,7 +57,7 @@ describe('User count middleware', () => {
       return {
         id: exampleUserId,
         username: 'test=1234567789',
-        privateMetadata: { postCount: 0 }
+        publicMetadata: { postCount: 0 }
       };
     });
   });
@@ -69,7 +69,7 @@ describe('User count middleware', () => {
       return {
         id: exampleUserId,
         username: 'test=1234567789',
-        privateMetadata: { postCount: 1 }
+        publicMetadata: { postCount: 1 }
       };
     });
 
@@ -94,7 +94,7 @@ describe('User count middleware', () => {
     expect(updateUserMetadataMock).toHaveBeenLastCalledWith(
       exampleUserId,
       expect.objectContaining({
-        privateMetadata: {
+        publicMetadata: {
           postCount: 0
         }
       })
@@ -107,7 +107,7 @@ describe('User count middleware', () => {
       return {
         id: exampleUserId,
         username: 'test=1234567789',
-        privateMetadata: { postCount: 0 }
+        publicMetadata: { postCount: 0 }
       };
     });
     // Mock a sample API Request payload
@@ -134,7 +134,7 @@ describe('User count middleware', () => {
     expect(updateUserMetadataMock).toHaveBeenLastCalledWith(
       exampleUserId,
       expect.objectContaining({
-        privateMetadata: {
+        publicMetadata: {
           postCount: 1
         }
       })
@@ -148,7 +148,7 @@ describe('User count middleware', () => {
       return {
         id: exampleUserId,
         username: 'test=1234567789',
-        privateMetadata: { postCount: 0 }
+        publicMetadata: { postCount: 0 }
       };
     });
 

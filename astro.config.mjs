@@ -6,6 +6,7 @@ import netlify from "@astrojs/netlify";
 
 // https://astro.build/config
 export default defineConfig({
+  site: process.env.SITE_URL,
   integrations: [clerk(), react()],
   adapter: netlify({
     middlewareMode: 'edge'

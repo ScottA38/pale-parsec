@@ -45,7 +45,7 @@ export default function UserWelcome() {
         <span className="welcome title">
           <strong>Welcome, { user.username }</strong>
         </span>
-        <span className="welcome-stats posts"># posts: # posts</span>
+        <span className="welcome-stats posts"># posts: { user.publicMetadata.postCount }</span>
         <span className="welcome-stats posts">Joined @ Date</span>
       </div>
     </div>

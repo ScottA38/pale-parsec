@@ -1,7 +1,7 @@
 export {}
 
 declare global {
-  interface UserPrivateMetadata {
+  interface UserPublicMetadata {
     postCount: number
   }
 }

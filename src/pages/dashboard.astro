@@ -2,7 +2,6 @@
 import SiteLayout from "../layouts/SiteLayout.astro";
 import { createClerkClient, type User} from "@clerk/astro/server";
 import { type ClerkClient } from "@clerk/backend";
-import { type BlogEntry, blogUpdateSchema } from "./api/updates.json";
 const { isAuthenticated, userId, redirectToSignIn } = Astro.locals.auth();
 if (!isAuthenticated) {
   return redirectToSignIn()
@@ -48,12 +47,6 @@ async function getAuthorName(
 async function extractBlobData(clerk: ClerkClient, blob: any) {
   const blobKey = Object.keys(blob)[0];
   const blobData : any = blob[blobKey];
-  // try {
-  //   blobJson = JSON.parse(blob[blobKey]);
-  // } catch (e) {
-  //   console.error(`Failed to parse blob key ${blobKey}`)
-  // }
-
   const authorName = await getAuthorName(clerk, blobData);
 
   return {

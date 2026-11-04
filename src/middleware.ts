@@ -19,18 +19,20 @@ export const addPostCountToClerk = async (_: APIContext, next: MiddlewareNext): 
     const { userId } = _.locals.auth()
     const requestMethod = _.request.method;
     if (userId == null) {
-      throw new Error('Unable to identify current user in Middleware function.');
+      console.error('Unable to identify current user in Middleware function.');
+
+      return response;
     }
 
     // Retrieve existing count of posts [if exists]
     const clerkUser: User = await clerk.users.getUser(userId);
-    let postCount: number | undefined = clerkUser.privateMetadata.postCount;
+    let postCount: number | undefined = clerkUser.publicMetadata.postCount;
 
     // 'Add' route
     if (requestMethod == 'POST') {
       clerk.users.updateUserMetadata(userId, {
-        privateMetadata: {
-          postCount: typeof postCount == 'number' ? ++postCount : 0
+        publicMetadata: {
+          postCount: typeof postCount == 'number' ? ++postCount : 1
         }
       });
     // 'Remove' route
@@ -43,7 +45,7 @@ export const addPostCountToClerk = async (_: APIContext, next: MiddlewareNext): 
       }
       
       clerk.users.updateUserMetadata(userId, {
-        privateMetadata: {
+        publicMetadata: {
           postCount: typeof postCount == 'number' ? newCount : 0
         }
       });
