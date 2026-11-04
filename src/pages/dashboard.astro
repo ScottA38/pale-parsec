@@ -1,8 +1,9 @@
 ---
 import SiteLayout from "../layouts/SiteLayout.astro";
-import { createClerkClient } from "@clerk/astro/server";
+import { createClerkClient, type User} from "@clerk/astro/server";
+import { type ClerkClient } from "@clerk/backend";
+import { type BlogEntry, blogUpdateSchema } from "./api/updates.json";
 const { isAuthenticated, userId, redirectToSignIn } = Astro.locals.auth();
-
 if (!isAuthenticated) {
   return redirectToSignIn()
 }
@@ -17,29 +18,69 @@ const activeBlobs = await fetch(
   { method: 'GET' }
 );
 const activeBlobsJson = await activeBlobs.json();
-const clerk = await createClerkClient({
+const clerk = createClerkClient({
   publishableKey: import.meta.env.PUBLIC_CLERK_PUBLISHABLE_KEY,
   secretKey: import.meta.env.CLERK_SECRET_KEY
 });
-const userList = await clerk.users.getUserList();
+
+async function getAuthorName(
+  clerk: ClerkClient,
+  blobJson: { content: { userId: string | null }} | undefined
+): Promise<string> {
+  const userId: string | null | undefined = blobJson?.content?.userId;
+  const fallback = 'Unknown';
+  if (!userId) {
+    return fallback;
+  }
+
+  try {
+    const author = await clerk.users.getUser(userId);
+    if (author !== undefined && author.username !== null) {
+      return author.username;
+    }
+  } catch (e) {
+    console.error(`Failed to get User data for userId: ${userId}`);
+  }
+
+  return fallback;
+}
+
+async function extractBlobData(clerk: ClerkClient, blob: any) {
+  const blobKey = Object.keys(blob)[0];
+  const blobData : any = blob[blobKey];
+  // try {
+  //   blobJson = JSON.parse(blob[blobKey]);
+  // } catch (e) {
+  //   console.error(`Failed to parse blob key ${blobKey}`)
+  // }
+
+  const authorName = await getAuthorName(clerk, blobData);
+
+  return {
+    title: blobData.content.title,
+    subheading: blobData.content.subheading,
+    authorName: authorName,
+    date: blobData.content.date,
+    body: blobData.content.body,
+    image: blobData.content.image,
+    tags: blobData.content.tags
+  }
+}
 ---
 
 <SiteLayout>
   <UserWelcome client:load />
   {
     activeBlobsJson.map(async (blob: any) => {
-      const blobKey = Object.keys(blob)[0];
-      const blobJson = JSON.parse(blob[blobKey]);
-      const author = await userList.data.find((user) => user.username === blobJson.content.author);
-
+      const { title, subheading = '', authorName, date, body, image, tags } = await extractBlobData(clerk, blob);
       return (<PostCard
-        title={ blobJson.content.title }
-        subheading={ blobJson.content.subheading }
-        authorName={ author?.username ?? 'Unknown' }
-        date={blobJson.content.date}
-        body={blobJson.content.body}
-        images={blobJson.content.images}
-        tags={blobJson.content.tags}
+        title={ title }
+        subheading={ subheading }
+        authorName={ authorName }
+        date={ date }
+        body={ body }
+        images={ image }
+        tags={ tags }
         client:load
       />)
     })

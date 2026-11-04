@@ -47,8 +47,13 @@ export const GET = async () => {
 
   for await (const blob of (await blogStore.list()).blobs) {
     const blobObject = await blogStore.get(blob.key, { 'type': 'json' });
-    const entry = blogUpdateSchema.parse(blobObject);
-    storeList.push({ [blob.key] : entry });
+    const entry = blogUpdateSchema.safeParse(blobObject);
+    if (!entry.success) {
+      console.error(`Invalid blog blob ${blob.key}`, entry.error.issues);
+      
+      continue;
+    }
+    storeList.push({ [blob.key] : entry.data });
   }
 
   return new Response(JSON.stringify(storeList));

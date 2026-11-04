@@ -51,6 +51,7 @@ export default function UploadForm({ currentUser }) {
           title: formData.title,
           subheading: formData.subheading,
           body: formData.body,
+          userId: currentUser.id,
           author: formData.author,
           images: formData.image ? [formData.image] : [],
           tags: formData.tags.split(",").map((tag) => tag.trim()),
