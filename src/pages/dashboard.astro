@@ -1,15 +1,14 @@
 ---
 import SiteLayout from "../layouts/SiteLayout.astro";
+import UserWelcome from "../components/UserWelcome.astro";
+import PostCard from "../components/dashboard/post-card";
+
 import { createClerkClient, type User} from "@clerk/astro/server";
 import { type ClerkClient } from "@clerk/backend";
-const { isAuthenticated, userId, redirectToSignIn } = Astro.locals.auth();
+const { isAuthenticated, redirectToSignIn } = Astro.locals.auth();
 if (!isAuthenticated) {
   return redirectToSignIn()
 }
-
-/** Component import */
-import UserWelcome from "../components/UserWelcome";
-import PostCard from "../components/dashboard/post-card";
 
 /** Fetching blog updates */
 const activeBlobs = await fetch(
@@ -62,7 +61,7 @@ async function extractBlobData(clerk: ClerkClient, blob: any) {
 ---
 
 <SiteLayout>
-  <UserWelcome client:load />
+  <UserWelcome client={clerk} />
   {
     activeBlobsJson.map(async (blob: any) => {
       const { title, subheading = '', authorName, date, body, image, tags } = await extractBlobData(clerk, blob);

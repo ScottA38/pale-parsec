@@ -1,0 +1,33 @@
+---
+interface Props {
+  client: ClerkClient
+}
+
+import { type ClerkClient } from "@clerk/backend";
+import '../styles/welcome.scss';
+import { AstroError } from 'astro/errors';
+const { userId } = Astro.locals.auth();
+const { client } = Astro.props;
+
+if (!userId) {
+  throw new AstroError('Unable to find user data', 'Check this user is definitely authenticated')
+}
+
+const user = await client.users.getUser(userId);
+var signupDate: string | undefined = undefined;
+const createdAt = user?.createdAt
+if (createdAt) {
+  signupDate = new Date(createdAt).toDateString();
+}
+---
+  
+<div class="welcome container">
+  <img class="welcome avatar" src={ user.imageUrl } alt={ user.username } />
+  <div class="welcome stats">
+    <span class="welcome title">
+      <strong>Welcome, { user.username }</strong>
+    </span>
+    <span class="welcome-stats posts"> posts: { user.publicMetadata.postCount }</span>
+    { signupDate && <span class="welcome-stats posts">Joined: { signupDate }</span> }
+  </div>
+</div>
