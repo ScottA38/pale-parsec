@@ -1,18 +1,6 @@
 import TagList from './TagList.jsx';
 import '../../styles/post-card.scss';
-import { type FunctionComponent } from 'react';
-
-// type PostBlobData = {
-//   content: {
-//     userId: string | null;
-//     title: string;
-//     subheading?: string;
-//     date?: string;
-//     body: string;
-//     image?: string[];
-//     tags: string[];
-//   };
-// };
+import { type FunctionComponent, useId } from 'react';
 
 type PostCardProps = {
   title: string;
@@ -33,8 +21,10 @@ export const PostCard: FunctionComponent<PostCardProps> = ({
   image = [],
   tags,
 }) => {
+  const titleId = useId();
+
   return (
-    <article className='post card update-entry'>
+    <article className='post card update-entry' aria-labelledby={titleId}>
       {image.length > 0 && (
         <div className='update-entry__images'>
           {image.map((image) => (
@@ -42,7 +32,7 @@ export const PostCard: FunctionComponent<PostCardProps> = ({
           ))}
         </div>
       )}
-      <h3 className='update-entry__title'>{title}</h3>
+      <h3 id={titleId} className='update-entry__title'>{title}</h3>
       <h4 className='update-entry__subheading'>{subheading}</h4>
       <small className='update-entry__date'>Published: {date}</small>
       <span className='update-entry__author'>By {authorName}</span>

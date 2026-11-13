@@ -1,20 +1,163 @@
 ---
+import { getImage, Image } from "astro:assets";
 import MainLayout from "../layouts/MainLayout.astro";
+import londonNightScene from './night-london-street-scene.JPG';
+import loftWindow from './france-loft-window.JPG';
+import Header from "../components/Header.astro";
+import type { GetImageResult } from "astro";
+import tornBillboard from '../torn-billboard-herr-loeffler.jpg';
+
+const headerNavLinks: NavConfigItem[] = [
+  {
+    link: '/',
+    label: 'Home',
+  },
+  {
+    link: '/about',
+    label: 'The Band'
+  },
+  {
+    link: '/tour',
+    label: 'Tour Dates'
+  },
+  {
+    link: '/forum',
+    label: 'Our Feed'
+  }
+];
+const navConfig: NavConfigItem[] = [ ...headerNavLinks ]
+const optimizedBackground: GetImageResult = await getImage({ src: tornBillboard, format: "webp" });
+type NavConfigItem  = {
+  link: string;
+  label: string;
+}
 ---
+<MainLayout title="Freedom Driver" pageTitle={ import.meta.env.INDEX_PAGE_TITLE }>
+  <h2 class="main-page title">{ import.meta.env.INDEX_PAGE_TITLE }</h2>
+  <Header
+    title="Freedom Driver"
+  >
+    <ol class="site navigation list">
+      {
+        navConfig.map((configItem: NavConfigItem, index: number) => {
+          const renderedLi = (
+            <li class="crumb" style={
+              `background-image: url(${optimizedBackground.src}); background-position: ${ (index * 10) }% 0%`
+            }>
+              <span class="highlight">
+                <a class="nav link" href={ configItem.link }>{ configItem.label }</a>
+              </span>
+            </li>
+          );
 
-<MainLayout>
-  <h2>Welcome</h2>
-  
-  <p>We are Freedom Driver, a new-wave alt-rock band from Shropshire, West Midlands</p>
-  <p>We bring high-energy performances with a bang!</p>
-  <p>We are a tight-knit outfit of passionate musicians who have devoted their skills to a variety act with the ability to shake the room.</p>
+          return renderedLi;
+        })
+      };
+    </ol>
+    <span slot="subheading">
+      <sub>For</sub>&#9;Seekers, searchers and heathens.
+    </span>
+  </Header> 
+  <div class="main-content">
+    <div class="music-item">
+      <Image class="music-item image" src={londonNightScene} alt="A streetlit road scene near Victoria Station, London, United Kingdom"/>
+      <div class="music-item details">
+        <h2 class="music-item subheading">
+          We're on the road again! 🎶
+        </h2>
+        <p class="music-item description">
+          We're on the move again boys!<br/><br/> Next stop Leeds as we embark upon our tour of the great Northern Counties in England. We simply can't wait to see you all there.
+        </p>
+      </div>
+    </div>
+    <div class="music-item">
+      <Image class="music-item image" src={loftWindow} alt="A porthole-style window within a insulated loft room, viewing into the sky"/>
+      <div class="music-item details">
+        <h2 class="music-item subheading">
+          New music coming soon (we promise!)
+        </h2>
+        <p class="music-item description">
+          Does your home studio look as chaotic as ours? We sincerely hope not! As John and Jeff get their bleedin' act together on our latest track 'teeth-combs', me and Mick are here in this Barn in France trying to sort out the bloomin' mess we have made!
+        </p>
+      </div>
+    </div>
+  </div>
 </MainLayout>
-
 <style lang="scss">
   @use '../styles/text.scss' as t;
-
   h2 {
     @include t.title-text;
     color: white;
   }
+
+  .main-content {
+    display: grid;
+    padding: 3rem;
+    gap: 5px;
+    grid-template-columns: repeat(3, minmax(0,  1fr));
+
+    .main-image.splash {
+      grid-column: 2/3;
+    }
+  }
+
+  .music-item {
+    background-color: lightgrey;
+    font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+    &.image {
+      display: block;
+      width: 100%;
+      height: auto;
+    }
+
+    &.details {
+      padding: 3rem;
+    }
+
+    &.subheading {
+      font-size: 1rem;
+    }
+
+    &.description {
+      font-size: 0.5rem;
+    }
+  }
+
+   ol {
+      display: grid;
+      grid-template-rows: repeat(4, minmax(0, 1fr));
+      gap: 2.5rem;
+      list-style: decimal;
+
+      li.crumb {
+        padding: 2rem;
+        max-width: 20vw;
+        color: white;
+        border: .25rem solid white;
+        border-radius: 5px;
+        text-align: right;
+        list-style: none;
+        text-shadow:
+          3px 3px 1px black;
+        transition: 0.2s ease all;
+        transition-delay: 100ms;
+
+        &:hover {
+          transform: translateX(15px);
+        }
+
+        a {
+          display: inline-block;
+          font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+          color: black;
+          text-decoration: none;
+        }
+      }
+    }
+
+    .highlight {
+      display: inline-block;
+      padding: .25rem 0;
+    color: white;
+    }
 </style>

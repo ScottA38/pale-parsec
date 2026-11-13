@@ -1,120 +1,45 @@
 ---
-import { getImage } from "astro:assets";
-import tornBillboard from '../torn-billboard-herr-loeffler.jpg';
+interface Props {
+  title: string;
+};
+const {
+  title,
+} = Astro.props;
 
-const { title } = Astro.props;
-type NavConfigItem  = {
-  link: string;
-  label: string;
-}
-
-const navConfig: NavConfigItem[] = [
-  {
-    link: "/",
-    label: "Home",
-  },
-  {
-    link: "/band",
-    label: "The Band",
-  },
-  {
-    link: "/tour",
-    label: "Tour",
-  },
-  {
-    link: "/merch",
-    label: "Merch",
-  }
-];
-const optimizedBackground = await getImage({ src: tornBillboard, format: "webp" });
 ---
-
 <header class="site header">
-    <nav class="site navigation">
-      <span class="site headings-container">
-        <h1 class="site title">{ title }</h1>
-        <h2 class="site subheading"><sub>For</sub>&#9;Seekers, searchers and heathens.</h2>
-      </span>
-      <ol class="site navigation list">
-        {
-          navConfig.map((configItem: NavConfigItem, index: number) => {
-            const renderedLi = (
-              <li class="crumb" style={
-                `background-image: url(${optimizedBackground.src}); background-position: ${ (index * 10) }% 0%`
-              }>
-                <span class="highlight">
-                  <a class="nav link" href={ configItem.link }>{ configItem.label }</a>
-                </span>
-              </li>
-            );
-
-           return renderedLi;
-          })
-        };
-      </ol>
-    </nav>
+  <nav class="site navigation">
+    <span class="site headings-container">
+      <h1 class="site title">{ title }</h1>
+      <h2 class="site subheading">
+        <slot name="subheading" />
+      </h2>
+    </span>
+    <slot name="default" />
+  </nav>
 </header>
 <style lang="scss">
   @use "../styles/text.scss" as t;
 
+  .splash-image {
+    grid-column: 3 / span 1;
+    background-size: cover;
+    object-fit: contain;
+  }
+
   .site.header {
-    position: fixed;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
     top: 0;
     left: 0;
-    // width: 100%;
     padding-bottom: 2rem;
     border-bottom: 1px ridge rgb(211 220 50 / 0.6) ;
     vertical-align: middle;
-
-    // &:hover ol {
-    //   grid-template-columns: repeat(4, minmax(0, 1fr));
-    // }
   }
 
   /** Navigation */
   .site.navigation {
-    ol {
-      display: grid;
-      grid-template-rows: repeat(4, minmax(0, 1fr));
-      gap: 2.5rem;
-      list-style: decimal;
-
-      li.crumb {
-        padding: 2rem;
-        max-width: 20vw;
-        color: white;
-        border: .25rem solid white;
-        // border-top: 1px;
-        // border-right: 5px;
-        // border-width: .25rem;
-        // border-color: hotpink;
-        border-radius: 5px;
-        /* box-shadow: 3px 6px 10px black; */
-        text-align: right;
-        list-style: none;
-        text-shadow:
-          3px 3px 1px black;
-        transition: 0.2s ease all;
-        transition-delay: 100ms;
-
-        &:hover {
-          transform: translateX(15px);
-        }
-
-        a {
-          display: inline-block;
-          font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
-          color: black;
-          text-decoration: none;
-        }
-      }
-    }
-
-    .highlight {
-      display: inline-block;
-      padding: .25rem 0;
-    color: white;
-    }
+ 
   }
 
   /** headings */
