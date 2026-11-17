@@ -9,7 +9,7 @@ export default defineConfig({
   site: process.env.SITE_URL,
   integrations: [clerk(), react()],
   adapter: netlify({
-    middlewareMode: 'edge'
+    middlewareMode: 'classic'
   }),
   output: "server"
 });
